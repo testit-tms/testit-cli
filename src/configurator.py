@@ -62,11 +62,15 @@ class Configurator:
         """Function returns mode."""
         return self.__config.mode
 
+    def get_output(self):
+        """Function returns output file path."""
+        return self.__config.output
+
     def is_debug(self):
         """Function returns debug mode."""
         return self.__config.is_debug
 
-    def __validate(self):
+    def __validate(self):  # noqa: C901
         if self.__config.mode is None:
             raise ValueError("Mode is not valid!")
 
@@ -76,15 +80,23 @@ class Configurator:
         if self.__config.token is None:
             raise ValueError("Token is not valid!")
 
-        if self.__config.project_id is None or not self.__validate_guid(self.__config.project_id):
-            raise ValueError("Project id is not valid!")
-
-        if self.__config.configuration_id is None or not self.__validate_guid(self.__config.configuration_id):
-            raise ValueError("Configuration id is not valid!")
+        if self.__config.mode in [Mode.IMPORT, Mode.CREATE_TEST_RUN]:
+            if self.__config.project_id is None or not self.__validate_guid(self.__config.project_id):
+                raise ValueError("Project id is not valid!")
 
         if self.__config.mode in [Mode.IMPORT, Mode.UPLOAD]:
+            if self.__config.configuration_id is None or not self.__validate_guid(self.__config.configuration_id):
+                raise ValueError("Configuration id is not valid!")
             if self.__config.results is None:
                 raise ValueError("Results is not valid!")
+
+        if self.__config.mode in [Mode.FINISHED_TEST_RUN, Mode.UPLOAD]:
+            if self.__config.testrun_id is None:
+                raise ValueError("Testrun id is not valid!")
+
+        if self.__config.mode is Mode.CREATE_TEST_RUN:
+            if self.__config.output is None:
+                raise ValueError("Output file is not valid!")
 
     def __load_env_config(self):
         env_properties = {}

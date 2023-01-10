@@ -1,11 +1,11 @@
+import glob
 import logging
 import os
 from xml.dom import minidom
-import glob
 
-from .configurator import Configurator
-from .status import Status
-from .testcase import TestCase
+from configurator import Configurator
+from models.status import Status
+from models.testcase import TestCase
 
 
 class Parser:
@@ -13,14 +13,11 @@ class Parser:
     def __init__(self, config: Configurator):
         self.__path_to_results = config.get_path()
 
-    def read_file(self):
+    def read_file(self):  # noqa: C901
         results = []
         files = self.__get_files()
-        for file in files:
-            file_name, file_extension = os.path.splitext(file)
 
-            if file_extension != '.xml':
-                continue
+        for file in files:
 
             xml = minidom.parse(file)
             testcases = xml.getElementsByTagName('testcase')

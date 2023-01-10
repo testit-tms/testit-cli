@@ -6,7 +6,7 @@ from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi
 from testit_api_client.models import TestRunV2PostShortModel
 
-from .converter import Converter
+from converter import Converter
 
 
 class ApiClient:
@@ -36,6 +36,16 @@ class ApiClient:
         logging.debug(f'Test run created: {response}')
 
         return response['id']
+
+    def complete_test_run(self, test_run_id: str):
+        """Function creates test run and returns test run id."""
+        logging.debug(f'Completing test run {test_run_id}')
+
+        test_run = self.__test_run_api.get_test_run_by_id(test_run_id)
+        if test_run is not None and test_run['state_name'].value != 'Completed':
+            self.__test_run_api.complete_test_run(test_run_id)
+
+        logging.info(f'Completed testrun (ID: {test_run_id})')
 
     def get_autotest(self, autotest_id: str, project_id: str):
         """Function returns autotest."""

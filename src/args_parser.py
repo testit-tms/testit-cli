@@ -29,7 +29,8 @@ class ArgsParser:
                       args.testrun_id,
                       args.testrun_name,
                       args.results,
-                      args.debug)
+                      args.debug,
+                      args.output)
 
     def __add_args(self):
         self.parser.add_argument(
@@ -106,4 +107,13 @@ class ArgsParser:
             action='store_true',
             dest='debug',
             help='Set debug logs'
+        )
+        self.parser.add_argument(
+            '-o',
+            '--output',
+            action="store",
+            dest="output",
+            metavar="FILE",
+            default=None,
+            help='Set file path for output'
         )

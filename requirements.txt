@@ -13,3 +13,5 @@ flake8-bugbear
 flake8-print
 
 isort
+
+black
