@@ -1,13 +1,13 @@
-from testit_api_client.models import (AutoTestPostModel, AutoTestPutModel,
-                                      AutoTestResultsForTestRunModel)
+from testit_api_client.models import (
+    AutoTestPostModel,
+    AutoTestPutModel,
+    AutoTestResultsForTestRunModel,
+)
 
 
 class Converter:
     @staticmethod
-    def test_result_to_autotest_post_model(
-            result,
-            external_id: str,
-            project_id: str):
+    def test_result_to_autotest_post_model(result, external_id: str, project_id: str):
         return AutoTestPostModel(
             external_id,
             project_id,
@@ -17,10 +17,7 @@ class Converter:
         )
 
     @staticmethod
-    def test_result_to_autotest_put_model(
-            result,
-            external_id: str,
-            project_id: str):
+    def test_result_to_autotest_put_model(result, external_id: str, project_id: str):
         return AutoTestPutModel(
             external_id,
             project_id,
@@ -31,9 +28,8 @@ class Converter:
 
     @staticmethod
     def test_result_to_testrun_result_post_model(
-            result,
-            external_id: str,
-            configuration_id: str):
+        result, external_id: str, configuration_id: str
+    ):
         return AutoTestResultsForTestRunModel(
             configuration_id,
             external_id,

@@ -7,8 +7,13 @@ from importer import Importer
 
 
 class Service:
-
-    def __init__(self, config: Configurator, api_client: ApiClient, parser: Parser, importer: Importer):
+    def __init__(
+        self,
+        config: Configurator,
+        api_client: ApiClient,
+        parser: Parser,
+        importer: Importer,
+    ):
         self.__config = config
         self.__api_client = api_client
         self.__parser = parser
@@ -30,11 +35,12 @@ class Service:
         self.__api_client.complete_test_run(self.__config.get_testrun_id())
 
     def __create_test_run(self):
-        return self.__api_client.create_test_run(self.__config.get_project_id(),
-                                                 self.__config.get_testrun_name())
+        return self.__api_client.create_test_run(
+            self.__config.get_project_id(), self.__config.get_testrun_name()
+        )
 
     def __upload_results(self):
-        logging.info('Collecting log files ...')
+        logging.info("Collecting log files ...")
 
         results = self.__parser.read_file()
 
@@ -42,8 +48,8 @@ class Service:
             test_run_id = self.__create_test_run()
             self.__config.set_testrun_id(test_run_id)
 
-        logging.info('Sending test results to TestIT ...')
+        logging.info("Sending test results to TestIT ...")
 
         self.__importer.send_results(results)
 
-        logging.info('Successfully sent test results')
+        logging.info("Successfully sent test results")

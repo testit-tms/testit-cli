@@ -11,8 +11,9 @@ from models.mode import Mode
 
 class Configurator:
     """Class representing a configurator"""
+
     __config: Config = None
-    __env_prefix: str = 'TMS'
+    __env_prefix: str = "TMS"
 
     __path_to_results = None
     __path_to_config = None
@@ -30,7 +31,7 @@ class Configurator:
 
     def get_url(self):
         """Function returns TMS url."""
-        if self.__config.url.endswith('/'):
+        if self.__config.url.endswith("/"):
             return self.__config.url[:-1]
         return self.__config.url
 
@@ -81,11 +82,15 @@ class Configurator:
             raise ValueError("Token is not valid!")
 
         if self.__config.mode in [Mode.IMPORT, Mode.CREATE_TEST_RUN]:
-            if self.__config.project_id is None or not self.__validate_guid(self.__config.project_id):
+            if self.__config.project_id is None or not self.__validate_guid(
+                self.__config.project_id
+            ):
                 raise ValueError("Project id is not valid!")
 
         if self.__config.mode in [Mode.IMPORT, Mode.UPLOAD]:
-            if self.__config.configuration_id is None or not self.__validate_guid(self.__config.configuration_id):
+            if self.__config.configuration_id is None or not self.__validate_guid(
+                self.__config.configuration_id
+            ):
                 raise ValueError("Configuration id is not valid!")
             if self.__config.results is None:
                 raise ValueError("Results is not valid!")
@@ -101,23 +106,31 @@ class Configurator:
     def __load_env_config(self):
         env_properties = {}
 
-        if f'{self.__env_prefix}_URL' in os.environ.keys():
-            env_properties['url'] = os.environ.get(f'{self.__env_prefix}_URL')
+        if f"{self.__env_prefix}_URL" in os.environ.keys():
+            env_properties["url"] = os.environ.get(f"{self.__env_prefix}_URL")
 
-        if f'{self.__env_prefix}_TOKEN' in os.environ.keys():
-            env_properties['token'] = os.environ.get(f'{self.__env_prefix}_TOKEN')
+        if f"{self.__env_prefix}_TOKEN" in os.environ.keys():
+            env_properties["token"] = os.environ.get(f"{self.__env_prefix}_TOKEN")
 
-        if f'{self.__env_prefix}_PROJECT_ID' in os.environ.keys():
-            env_properties['project_id'] = os.environ.get(f'{self.__env_prefix}_PROJECT_ID')
+        if f"{self.__env_prefix}_PROJECT_ID" in os.environ.keys():
+            env_properties["project_id"] = os.environ.get(
+                f"{self.__env_prefix}_PROJECT_ID"
+            )
 
-        if f'{self.__env_prefix}_CONFIGURATION_ID' in os.environ.keys():
-            env_properties['configuration_id'] = os.environ.get(f'{self.__env_prefix}_CONFIGURATION_ID')
+        if f"{self.__env_prefix}_CONFIGURATION_ID" in os.environ.keys():
+            env_properties["configuration_id"] = os.environ.get(
+                f"{self.__env_prefix}_CONFIGURATION_ID"
+            )
 
-        if f'{self.__env_prefix}_TEST_RUN_ID' in os.environ.keys():
-            env_properties['testrun_id'] = os.environ.get(f'{self.__env_prefix}_TEST_RUN_ID')
+        if f"{self.__env_prefix}_TEST_RUN_ID" in os.environ.keys():
+            env_properties["testrun_id"] = os.environ.get(
+                f"{self.__env_prefix}_TEST_RUN_ID"
+            )
 
-        if f'{self.__env_prefix}_TEST_RUN_NAME' in os.environ.keys():
-            env_properties['testrun_name'] = os.environ.get(f'{self.__env_prefix}_TEST_RUN_NAME')
+        if f"{self.__env_prefix}_TEST_RUN_NAME" in os.environ.keys():
+            env_properties["testrun_name"] = os.environ.get(
+                f"{self.__env_prefix}_TEST_RUN_NAME"
+            )
 
         return env_properties
 
@@ -128,4 +141,7 @@ class Configurator:
 
     @staticmethod
     def __validate_guid(value: str):
-        return re.fullmatch(r'[a-zA-Z\d]{8}-[a-zA-Z\d]{4}-[a-zA-Z\d]{4}-[a-zA-Z\d]{4}-[a-zA-Z\d]{12}', value)
+        return re.fullmatch(
+            r"[a-zA-Z\d]{8}-[a-zA-Z\d]{4}-[a-zA-Z\d]{4}-[a-zA-Z\d]{4}-[a-zA-Z\d]{12}",
+            value,
+        )
