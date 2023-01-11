@@ -1,5 +1,4 @@
 import logging
-import sys
 
 
 class Logger:
@@ -10,6 +9,9 @@ class Logger:
         """Function registers loggers."""
 
         logging.basicConfig(
-            format='%(asctime)s (%(levelname)s) [%(filename)s.%(funcName)s] %(message)s' if is_debug else '%(message)s',
+            format="%(asctime)s (%(levelname)s) [%(filename)s.%(funcName)s] %(message)s"
+            if is_debug
+            else "%(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
-            level=logging.DEBUG if is_debug else logging.INFO)
+            level=logging.DEBUG if is_debug else logging.INFO,
+        )

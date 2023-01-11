@@ -13,3 +13,5 @@ flake8-bugbear
 flake8-print
 
 isort
+
+black==22.12.0

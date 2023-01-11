@@ -14,3 +14,4 @@ class Config:
     testrun_name: str
     results: str
     is_debug: bool
+    output: str
