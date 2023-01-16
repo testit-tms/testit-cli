@@ -43,7 +43,6 @@ class ArgsParser:
             choices=["import", "create", "finish", "upload"],
             default="import",
             dest="mode",
-            metavar="import",
             help="Set CLI mode",
         )
         self.parser.add_argument(
