@@ -6,7 +6,7 @@ from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi
 from testit_api_client.models import TestRunV2PostShortModel
 
-from converter import Converter
+from testit_cli.converter import Converter
 
 
 class ApiClient:

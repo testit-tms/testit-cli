@@ -4,9 +4,9 @@ import re
 
 import validators
 
-from args_parser import ArgsParser
-from models.config import Config
-from models.mode import Mode
+from testit_cli.args_parser import ArgsParser
+from testit_cli.models.config import Config
+from testit_cli.models.mode import Mode
 
 
 class Configurator:

@@ -3,9 +3,9 @@ import logging
 import os
 from xml.dom import minidom
 
-from configurator import Configurator
-from models.status import Status
-from models.testcase import TestCase
+from testit_cli.configurator import Configurator
+from testit_cli.models.status import Status
+from testit_cli.models.testcase import TestCase
 
 
 class Parser:

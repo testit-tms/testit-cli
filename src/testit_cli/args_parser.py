@@ -1,7 +1,7 @@
 import argparse
 
-from models.config import Config
-from models.mode import Mode
+from testit_cli.models.config import Config
+from testit_cli.models.mode import Mode
 
 
 class ArgsParser:

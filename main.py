@@ -1,3 +1,3 @@
-from src import __main__
+from testit_cli import __main__
 
 __main__.console_main()

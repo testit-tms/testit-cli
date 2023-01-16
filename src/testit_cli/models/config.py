@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from models.mode import Mode
+from testit_cli.models.mode import Mode
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from models.status import Status
+from testit_cli.models.status import Status
 
 
 class TestCase:

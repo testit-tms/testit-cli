@@ -1,12 +1,12 @@
-from parser import Parser
+from testit_cli.parser import Parser
 
-from apiclient import ApiClient
-from args_parser import ArgsParser
-from configurator import Configurator
-from importer import Importer
-from logger import Logger
-from models.mode import Mode
-from service import Service
+from testit_cli.apiclient import ApiClient
+from testit_cli.args_parser import ArgsParser
+from testit_cli.configurator import Configurator
+from testit_cli.importer import Importer
+from testit_cli.logger import Logger
+from testit_cli.models.mode import Mode
+from testit_cli.service import Service
 
 
 def console_main():

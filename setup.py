@@ -1,12 +1,13 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
-    name='testit-importer-junit',
-    version='1.2.6',
-    description='Junit report importer for Test IT',
+    name='testit-cli',
+    version='0.1.0',
+    description='This tool is the command line wrapper of TestIT allowing you to upload the test results in real time '
+                'to TestIT',
     long_description=open('README.md', "r").read(),
     long_description_content_type="text/markdown",
-    url='https://pypi.org/project/testit-importer-junit/',
+    url='https://pypi.org/project/testit/',
     author='Integration team',
     author_email='integrations@testit.software',
     license='Apache-2.0',
@@ -17,13 +18,13 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
-    packages=['testit_importer_junit'],
-    package_data={'testit_importer_junit': ['../connection_config.ini']},
-    package_dir={'testit_importer_junit': 'src'},
+    py_modules=['testit_cli'],
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     install_requires=['testit-api-client>=2,<3', 'validators'],
     entry_points={
         'console_scripts': [
-            'testit-junit = testit_importer_junit.__main__:console_main'
+            'testit = testit_cli.__main__:console_main'
         ]
     }
 )
