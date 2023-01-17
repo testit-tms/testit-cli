@@ -25,7 +25,8 @@ class Parser:
                 name = elem.attributes["name"].value
                 class_name = self.__get_class_name(elem.attributes["classname"].value)
                 name_space = self.__get_name_space(
-                    elem.attributes["classname"].value, class_name
+                    elem.attributes["file"].value if "file" in elem.attributes else elem.attributes["classname"].value,
+                    class_name
                 )
                 duration = elem.attributes["time"].value
 
