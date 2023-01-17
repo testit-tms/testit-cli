@@ -3,8 +3,8 @@ from setuptools import find_packages, setup
 setup(
     name='testit-cli',
     version='0.1.0',
-    description='This tool is the command line wrapper of TestIT allowing you to upload the test results in real time '
-                'to TestIT',
+    description='This tool is the command line wrapper of Test IT allowing you to upload the test results in real time '
+                'to Test IT',
     long_description=open('README.md', "r").read(),
     long_description_content_type="text/markdown",
     url='https://pypi.org/project/testit/',

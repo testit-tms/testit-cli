@@ -48,7 +48,7 @@ class Service:
             test_run_id = self.__create_test_run()
             self.__config.set_testrun_id(test_run_id)
 
-        logging.info("Sending test results to TestIT ...")
+        logging.info("Sending test results to Test IT ...")
 
         self.__importer.send_results(results)
 
