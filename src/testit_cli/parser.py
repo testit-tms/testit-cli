@@ -23,14 +23,10 @@ class Parser:
 
             for elem in testcases:
                 name = elem.attributes["name"].value
-                class_name = self.__get_class_name(elem.attributes["classname"].value)
-                name_space = self.__get_name_space(
-                    elem.attributes["file"].value if "file" in elem.attributes else elem.attributes["classname"].value,
-                    class_name
-                )
                 duration = elem.attributes["time"].value
+                class_name = elem.attributes["classname"].value
 
-                testcase = TestCase(name, name_space, class_name, duration)
+                testcase = TestCase(name, "namespace", class_name, duration)
 
                 if elem.childNodes is not None:
                     for child in elem.childNodes:
@@ -63,13 +59,3 @@ class Parser:
             files.append(self.__path_to_results)
 
         return files
-
-    @staticmethod
-    def __get_class_name(value: str):
-        parts = value.split(".")
-        return parts[len(parts) - 1]
-
-    @staticmethod
-    def __get_name_space(value: str, delimiter: str):
-        parts = value.split(delimiter)
-        return parts[0][:-1]

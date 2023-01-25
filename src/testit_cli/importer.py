@@ -16,7 +16,9 @@ class Importer:
     def send_results(self, results: [TestCase]):
         for result in tqdm(results, desc="Uploading"):
             external_id = self.__get_external_id(
-                result.get_name_space() + result.get_class_name() + result.get_name()
+                result.get_name_space()
+                + result.get_class_name()
+                + result.get_name()
             )
 
             autotest = self.__api_client.get_autotest(
