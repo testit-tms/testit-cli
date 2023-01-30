@@ -23,7 +23,7 @@ class Parser:
 
             for elem in testcases:
                 name = elem.attributes["name"].value
-                duration = elem.attributes["time"].value
+                duration = float(elem.attributes["time"].value) * 1000
                 class_name = elem.attributes["classname"].value
 
                 testcase = TestCase(name, "namespace", class_name, duration)
