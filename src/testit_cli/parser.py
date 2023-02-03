@@ -23,7 +23,7 @@ class Parser:
 
             for elem in testcases:
                 name = elem.attributes["name"].value
-                duration = float(elem.attributes["time"].value) * 1000
+                duration = float(elem.attributes["time"].value) * 1000 if "time" in elem.attributes else 0
                 class_name = elem.attributes["classname"].value
 
                 testcase = TestCase(name, "namespace", class_name, duration)
@@ -33,7 +33,8 @@ class Parser:
                         if child.nodeName == "error" or child.nodeName == "failure":
                             if "message" in child.attributes:
                                 testcase.set_message(child.attributes["message"].value)
-                            testcase.set_trace(child.firstChild.nodeValue)
+                            if child.firstChild is not None:
+                                testcase.set_trace(child.firstChild.nodeValue)
                             testcase.set_status(Status.FAILED)
                         elif child.nodeName == "skipped":
                             if "message" in child.attributes:
