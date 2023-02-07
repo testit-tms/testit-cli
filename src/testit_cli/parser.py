@@ -34,7 +34,7 @@ class Parser:
                             if "message" in child.attributes:
                                 testcase.set_message(child.attributes["message"].value)
                             if child.firstChild is not None:
-                                testcase.set_trace(child.firstChild.nodeValue)
+                                testcase.set_trace(child.firstChild.wholeText)
                             testcase.set_status(Status.FAILED)
                         elif child.nodeName == "skipped":
                             if "message" in child.attributes:
