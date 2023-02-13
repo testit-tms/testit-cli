@@ -43,6 +43,10 @@ class Configurator:
         """Function returns project id."""
         return self.__config.project_id
 
+    def set_project_id(self, value: str):
+        """Function sets project id."""
+        self.__config.project_id = value
+
     def get_configuration_id(self):
         """Function returns configuration id."""
         return self.__config.configuration_id

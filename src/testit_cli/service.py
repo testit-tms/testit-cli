@@ -47,6 +47,9 @@ class Service:
         if self.__config.get_testrun_id() is None:
             test_run_id = self.__create_test_run()
             self.__config.set_testrun_id(test_run_id)
+        else:
+            test_run = self.__api_client.get_test_run(self.__config.get_testrun_id())
+            self.__config.set_project_id(test_run.project_id)
 
         logging.info("Sending test results to Test IT ...")
 

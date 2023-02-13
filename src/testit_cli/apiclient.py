@@ -7,6 +7,7 @@ from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi
 from testit_api_client.models import TestRunV2PostShortModel
 
 from testit_cli.converter import Converter
+from testit_cli.models.testrun import TestRun
 
 
 class ApiClient:
@@ -35,14 +36,25 @@ class ApiClient:
         return response["id"]
 
     def complete_test_run(self, test_run_id: str):
-        """Function creates test run and returns test run id."""
+        """Function completes test run"""
         logging.debug(f"Completing test run {test_run_id}")
 
-        test_run = self.__test_run_api.get_test_run_by_id(test_run_id)
-        if test_run is not None and test_run["state_name"].value != "Completed":
+        test_run = self.get_test_run(test_run_id)
+        if test_run is not None and test_run.state != "Completed":
             self.__test_run_api.complete_test_run(test_run_id)
 
         logging.info(f"Completed testrun (ID: {test_run_id})")
+
+    def get_test_run(self, test_run_id: str):
+        """Function gets test run and returns test run."""
+        logging.debug(f"Getting test run {test_run_id}")
+
+        test_run = self.__test_run_api.get_test_run_by_id(test_run_id)
+        if test_run is not None:
+            logging.debug(f"Got testrun (ID: {test_run_id})")
+            return TestRun(id=test_run_id, project_id=test_run["project_id"], state=test_run["state_name"].value)
+
+        logging.error(f"Test run {test_run_id} not found!")
 
     def get_autotest(self, autotest_id: str, project_id: str):
         """Function returns autotest."""
