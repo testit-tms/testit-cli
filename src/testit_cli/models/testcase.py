@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from testit_api_client.model.available_test_result_outcome import AvailableTestResultOutcome
+
 from testit_cli.models.status import Status
 
 
@@ -44,7 +46,7 @@ class TestCase:
         self.__trace = value
 
     def get_status(self):
-        return self.__status
+        return AvailableTestResultOutcome(self.__status.value)
 
     def set_status(self, value: Status):
         self.__status = value
