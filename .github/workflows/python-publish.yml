@@ -9,10 +9,8 @@
 name: Upload Python Package
 
 on:
-  pull_request:
-    branches: [ "*" ]
-#  release:
-#    types: [published]
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -42,6 +40,10 @@ jobs:
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
       run: echo "$GITHUB_CONTEXT"
+    - name: Check version
+      run: |
+        VERSION=$(sed '5q;d' setup.py | grep -o "[0-9]\.[0-9]\.[0-9]");
+        if [ $VERSION = ${{ github.event.release.tag_name }} ]; then exit 0; else exit 1; fi
 #     - name: Publish package
 #       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
 #       with:
