@@ -9,8 +9,10 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [published]
+  pull_request:
+    branches: [ "*" ]
+#  release:
+#    types: [published]
 
 permissions:
   contents: read
@@ -32,6 +34,8 @@ jobs:
         pip install build
     - name: Build package
       run: python -m build
+    - name: Test
+      run: cat setup.py
 #     - name: Publish package
 #       uses: pypa/gh-action-pypi-publish@27b31702a0e7fc50959f5ad993c78deac1bdfc29
 #       with:
