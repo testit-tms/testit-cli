@@ -33,7 +33,7 @@ class Converter:
         return AutoTestResultsForTestRunModel(
             configuration_id,
             external_id,
-            result.get_status().value,
+            result.get_status(),
             traces=result.get_trace(),
             duration=round(result.get_duration()),
             message=result.get_message(),
