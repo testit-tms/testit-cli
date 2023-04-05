@@ -63,6 +63,14 @@ class Configurator:
         """Function returns testrun name."""
         return self.__config.testrun_name
 
+    def get_separator(self):
+        """Function returns separator."""
+        return self.__config.separator
+
+    def get_namespace(self):
+        """Function returns namespace."""
+        return self.__config.namespace
+
     def get_mode(self):
         """Function returns mode."""
         return self.__config.mode
