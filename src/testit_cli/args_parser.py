@@ -30,6 +30,8 @@ class ArgsParser:
             args.configuration_id,
             args.testrun_id,
             args.testrun_name,
+            args.separator,
+            args.namespace,
             args.results,
             args.debug,
             args.output,
@@ -93,6 +95,22 @@ class ArgsParser:
             dest="testrun_name",
             metavar="TestRun01",
             help="Set test run name",
+        )
+        self.parser.add_argument(
+            "-s",
+            "--separator",
+            action="store",
+            dest="separator",
+            metavar=".",
+            help="Separate the classname value in the results into namespace and classname",
+        )
+        self.parser.add_argument(
+            "-ns",
+            "--namespace",
+            action="store",
+            dest="namespace",
+            metavar="NameSpace01",
+            help="Set namespace",
         )
         self.parser.add_argument(
             "-r",

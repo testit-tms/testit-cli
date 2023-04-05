@@ -12,6 +12,8 @@ class Config:
     configuration_id: str
     testrun_id: str
     testrun_name: str
+    separator: str
+    namespace: str
     results: str
     is_debug: bool
     output: str
