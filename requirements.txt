@@ -6,7 +6,7 @@ testit-api-client==3.0.1
 urllib3==1.26.15
 wheel>=0.37.1
 validators==0.20.0
-tqdm==4.65.0
+tqdm>=4.64.1
 
 flake8
 flake8-bugbear==23.3.12
