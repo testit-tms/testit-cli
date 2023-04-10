@@ -28,7 +28,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run flake8
-        run: flake8 --ignore=C901 .
+        run: flake8 --ignore=C901,W503 .
 
       - name: Tests
         run: pytest --basetemp=tmp
