@@ -24,6 +24,7 @@ class Converter:
             result.get_name(),
             namespace=result.get_name_space(),
             classname=result.get_class_name(),
+            is_flaky=result.get_is_flaky()
         )
 
     @staticmethod

@@ -13,6 +13,7 @@ class TestCase:
     __status: Status = None
     __message: str = None
     __trace: str = None
+    __is_flaky: bool = None
 
     def __init__(self, name, name_space, class_name, duration):
         self.__name = name
@@ -50,3 +51,9 @@ class TestCase:
 
     def set_status(self, value: Status):
         self.__status = value
+
+    def get_is_flaky(self) -> bool:
+        return self.__is_flaky
+
+    def set_is_flaky(self, value: bool):
+        self.__is_flaky = value
