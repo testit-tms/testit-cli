@@ -25,8 +25,7 @@ class ArgsParser:
         args = self.parser.parse_args()
         if sys.argv[0].split("\\")[-1] == "testit":
             self.parser.print_help()
-            sys.exit(0)
-            
+            sys.exit(0)   
         return Config(
             Mode(args.mode),
             args.url,
