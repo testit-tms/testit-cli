@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 from testit_cli.models.config import Config
 from testit_cli.models.mode import Mode
