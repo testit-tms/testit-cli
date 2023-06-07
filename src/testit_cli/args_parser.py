@@ -1,5 +1,5 @@
 import argparse
-
+import sys
 from testit_cli.models.config import Config
 from testit_cli.models.mode import Mode
 
@@ -21,12 +21,10 @@ class ArgsParser:
 
     def parse_args(self):
         """Function parses commandline arguments and returns config."""
- 
         args = self.parser.parse_args()
         if sys.argv[0].split("\\")[-1] == "testit":
             self.parser.print_help()
             sys.exit(0)
-            
         return Config(
             Mode(args.mode),
             args.url,
