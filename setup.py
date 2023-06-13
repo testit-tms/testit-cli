@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='testit-cli',
-    version='0.1.8',
+    version='0.1.9',
     description='This tool is the command line wrapper of Test IT allowing you to upload the test results in real time '
                 'to Test IT',
     long_description=open('README.md', "r").read(),
