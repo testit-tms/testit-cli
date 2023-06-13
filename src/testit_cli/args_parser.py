@@ -22,7 +22,7 @@ class ArgsParser:
     def parse_args(self):
         """Function parses commandline arguments and returns config."""
         args = self.parser.parse_args()
-        if sys.argv[0].split("\\")[-1] == "testit" and len(sys.argv) <= 5:
+        if sys.argv[0].split("\\")[-1] == "testit" and len(sys.argv) == 1: #если аргумент testit и длина аргументов равна одному
             self.parser.print_help()
             sys.exit(0)
         return Config(
