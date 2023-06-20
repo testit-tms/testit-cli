@@ -71,6 +71,10 @@ class Configurator:
         """Function returns namespace."""
         return self.__config.namespace
 
+    def get_classname(self):
+        """Function returns classname."""
+        return self.__config.classname
+
     def get_mode(self):
         """Function returns mode."""
         return self.__config.mode
