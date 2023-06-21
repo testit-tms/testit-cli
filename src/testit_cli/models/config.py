@@ -14,6 +14,7 @@ class Config:
     testrun_name: str
     separator: str
     namespace: str
+    classname: str
     results: str
     is_debug: bool
     output: str

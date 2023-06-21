@@ -13,6 +13,7 @@ class Parser:
         self.__path_to_results = config.get_path()
         self.__separator = config.get_separator()
         self.__namespace = config.get_namespace()
+        self.__classname = config.get_classname()
 
     def read_file(self):  # noqa: C901
         results = []
@@ -26,16 +27,20 @@ class Parser:
             for elem in testcases:
                 name = elem.attributes["name"].value
                 duration = float(elem.attributes["time"].value) * 1000 if "time" in elem.attributes else 0
+                name_space = "namespace"
+                class_name = "classname"
 
                 if self.__separator is not None and self.__separator in elem.attributes["classname"].value:
                     class_name = elem.attributes["classname"].value.split(self.__separator)[-1]
                     name_space = elem.attributes["classname"].value[:-(len(class_name) + 1)]
-                else:
+                elif "classname" in elem.attributes:
                     class_name = elem.attributes["classname"].value
-                    name_space = "namespace"
 
                 if self.__namespace is not None:
                     name_space = self.__namespace
+
+                if self.__classname is not None:
+                    class_name = self.__classname
 
                 testcase = TestCase(name, name_space, class_name, duration)
 

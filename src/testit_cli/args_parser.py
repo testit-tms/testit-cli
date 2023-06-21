@@ -22,7 +22,7 @@ class ArgsParser:
     def parse_args(self):
         """Function parses commandline arguments and returns config."""
         args = self.parser.parse_args()
-        if sys.argv[0].split("\\")[-1] == "testit" and len(sys.argv) == 1:
+        if len(sys.argv) == 1:
             self.parser.print_help()
             sys.exit(0)
         return Config(
@@ -35,6 +35,7 @@ class ArgsParser:
             args.testrun_name,
             args.separator,
             args.namespace,
+            args.classname,
             args.results,
             args.debug,
             args.output,
@@ -114,6 +115,14 @@ class ArgsParser:
             dest="namespace",
             metavar="NameSpace01",
             help="Set namespace",
+        )
+        self.parser.add_argument(
+            "-cn",
+            "--classname",
+            action="store",
+            dest="classname",
+            metavar="ClassName01",
+            help="Set classname",
         )
         self.parser.add_argument(
             "-r",
