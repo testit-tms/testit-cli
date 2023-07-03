@@ -61,8 +61,9 @@ class ApiClient:
         logging.debug(f"Getting autotest {autotest_id} in project {project_id}")
 
         autotest = self.__autotest_api.get_all_auto_tests(
-            project_id=project_id, external_id=autotest_id
-        )
+            project_id=project_id,
+            external_id=autotest_id,
+            deleted=False)
 
         logging.debug(f"Got autotest {autotest_id} in project {project_id}: {autotest}")
 
