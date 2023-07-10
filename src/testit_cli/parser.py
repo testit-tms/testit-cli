@@ -3,17 +3,18 @@ import logging
 import os
 from xml.dom import minidom
 
-from testit_cli.configurator import Configurator
+from testit_cli.models.config import Config
+
 from testit_cli.models.status import Status
 from testit_cli.models.testcase import TestCase
 
 
 class Parser:
-    def __init__(self, config: Configurator):
-        self.__path_to_results = config.get_path()
-        self.__separator = config.get_separator()
-        self.__namespace = config.get_namespace()
-        self.__classname = config.get_classname()
+    def __init__(self, config: Config):
+        self.__path_to_results = config.results
+        self.__separator = config.separator
+        self.__namespace = config.namespace
+        self.__classname = config.classname
 
     def read_file(self):  # noqa: C901
         results = []

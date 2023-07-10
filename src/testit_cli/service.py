@@ -1,15 +1,15 @@
 import logging
-from testit_cli.parser import Parser
 
+from testit_cli.models.config import Config
+from testit_cli.parser import Parser
 from testit_cli.apiclient import ApiClient
-from testit_cli.configurator import Configurator
 from testit_cli.importer import Importer
 
 
 class Service:
     def __init__(
         self,
-        config: Configurator,
+        config: Config,
         api_client: ApiClient,
         parser: Parser,
         importer: Importer,
@@ -28,15 +28,15 @@ class Service:
 
     def create_testrun(self):
         test_run_id = self.__create_test_run()
-        with open(self.__config.get_output(), "w") as text_file:
+        with open(self.__config.output, "w") as text_file:
             text_file.write(test_run_id)
 
     def finished_testrun(self):
-        self.__api_client.complete_test_run(self.__config.get_testrun_id())
+        self.__api_client.complete_test_run(self.__config.testrun_id)
 
     def __create_test_run(self):
         return self.__api_client.create_test_run(
-            self.__config.get_project_id(), self.__config.get_testrun_name()
+            self.__config.project_id, self.__config.testrun_name
         )
 
     def __upload_results(self):
@@ -44,12 +44,12 @@ class Service:
 
         results = self.__parser.read_file()
 
-        if self.__config.get_testrun_id() is None:
+        if self.__config.testrun_id is None:
             test_run_id = self.__create_test_run()
-            self.__config.set_testrun_id(test_run_id)
+            self.__config.testrun_id = test_run_id
         else:
-            test_run = self.__api_client.get_test_run(self.__config.get_testrun_id())
-            self.__config.set_project_id(test_run.project_id)
+            test_run = self.__api_client.get_test_run(self.__config.testrun_id)
+            self.__config.project_id = test_run.project_id
 
         logging.info("Sending test results to Test IT ...")
 
