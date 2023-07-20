@@ -21,7 +21,7 @@ setup(
     py_modules=['testit_cli'],
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
-    install_requires=['testit-api-client>=3.1.1,<4', 'validators', 'tqdm'],
+    install_requires=['testit-api-client==3.1.1', 'validators', 'tqdm'],
     entry_points={
         'console_scripts': [
             'testit = testit_cli.__main__:console_main'
