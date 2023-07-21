@@ -16,4 +16,4 @@ isort
 
 black>=22.8.0
 
-click~=8.1.6
+click~=8.0.4
