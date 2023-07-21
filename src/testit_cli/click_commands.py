@@ -1,8 +1,8 @@
 import click
 
-from testit_cli.models.config import Config
-from testit_cli.service_factory import ServiceFactory
-from testit_cli.validation import validate_uuid, validate_url
+from .models.config import Config
+from .service_factory import ServiceFactory
+from .validation import validate_uuid, validate_url
 
 
 @click.group()
