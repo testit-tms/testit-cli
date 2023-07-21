@@ -17,3 +17,4 @@ isort
 black>=22.8.0
 
 click~=8.0.4
+pytest
