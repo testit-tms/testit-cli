@@ -31,4 +31,4 @@ jobs:
         run: flake8 --ignore=C901,W503 .
 
       - name: Tests
-        run: pytest --basetemp=tmp
+        run: python -m pytest --basetemp=tmp
