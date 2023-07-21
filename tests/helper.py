@@ -19,7 +19,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_import_without_url_argument(cls):
-        return f"results import --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
+        return "results import --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
 
     @classmethod
     def get_command_results_import_with_long_arguments_without_token_argument(cls):
@@ -31,7 +31,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_import_without_token_argument(cls):
-        return f"results import --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
+        return "results import --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
 
     @classmethod
     def get_command_results_import_with_long_arguments_without_project_id_argument(cls):
@@ -43,7 +43,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_import_without_project_id_argument(cls):
-        return f"results import --help' for help.\n\nError: Missing option '-pi' / '--project-id'.\n"
+        return "results import --help' for help.\n\nError: Missing option '-pi' / '--project-id'.\n"
 
     @classmethod
     def get_command_results_import_with_long_arguments_without_configuration_id_argument(cls):
@@ -55,7 +55,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_import_without_configuration_id_argument(cls):
-        return f"results import --help' for help.\n\nError: Missing option '-ci' / '--configuration-id'.\n"
+        return "results import --help' for help.\n\nError: Missing option '-ci' / '--configuration-id'.\n"
 
     @classmethod
     def get_command_results_import_with_long_arguments_without_results_argument(cls):
@@ -67,7 +67,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_import_without_results_argument(cls):
-        return f"results import --help' for help.\n\nError: Missing option '-r' / '--results'.\n"
+        return "results import --help' for help.\n\nError: Missing option '-r' / '--results'.\n"
 
     @classmethod
     def get_command_results_upload_with_long_arguments_without_url_argument(cls):
@@ -79,7 +79,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_upload_without_url_argument(cls):
-        return f"results upload --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
+        return "results upload --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
 
     @classmethod
     def get_command_results_upload_with_long_arguments_without_token_argument(cls):
@@ -92,7 +92,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_upload_without_token_argument(cls):
-        return f"results upload --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
+        return "results upload --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
 
     @classmethod
     def get_command_results_upload_with_long_arguments_without_testrun_id_argument(cls):
@@ -105,7 +105,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_upload_without_testrun_id_argument(cls):
-        return f"results upload --help' for help.\n\nError: Missing option '-ti' / '--testrun-id'.\n"
+        return "results upload --help' for help.\n\nError: Missing option '-ti' / '--testrun-id'.\n"
 
     @classmethod
     def get_command_results_upload_with_long_arguments_without_configuration_id_argument(cls):
@@ -117,7 +117,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_upload_without_configuration_id_argument(cls):
-        return f"results upload --help' for help.\n\nError: Missing option '-ci' / '--configuration-id'.\n"
+        return "results upload --help' for help.\n\nError: Missing option '-ci' / '--configuration-id'.\n"
 
     @classmethod
     def get_command_results_upload_with_long_arguments_without_results_argument(cls):
@@ -129,7 +129,7 @@ class Helper:
 
     @classmethod
     def get_output_for_results_upload_without_results_argument(cls):
-        return f"results upload --help' for help.\n\nError: Missing option '-r' / '--results'.\n"
+        return "results upload --help' for help.\n\nError: Missing option '-r' / '--results'.\n"
 
     @classmethod
     def get_command_testrun_create_with_long_arguments_without_url_argument(cls):
@@ -141,7 +141,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_create_without_url_argument(cls):
-        return f"testrun create --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
+        return "testrun create --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
 
     @classmethod
     def get_command_testrun_create_with_long_arguments_without_token_argument(cls):
@@ -153,7 +153,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_create_without_token_argument(cls):
-        return f"testrun create --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
+        return "testrun create --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
 
     @classmethod
     def get_command_testrun_create_with_long_arguments_without_project_id_argument(cls):
@@ -165,7 +165,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_create_without_project_id_argument(cls):
-        return f"testrun create --help' for help.\n\nError: Missing option '-pi' / '--project-id'.\n"
+        return "testrun create --help' for help.\n\nError: Missing option '-pi' / '--project-id'.\n"
 
     @classmethod
     def get_command_testrun_create_with_long_arguments_without_output_argument(cls):
@@ -177,7 +177,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_create_without_output_argument(cls):
-        return f"testrun create --help' for help.\n\nError: Missing option '-o' / '--output'.\n"
+        return "testrun create --help' for help.\n\nError: Missing option '-o' / '--output'.\n"
 
     @classmethod
     def get_command_testrun_complete_with_long_arguments_without_url_argument(cls):
@@ -189,7 +189,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_complete_without_url_argument(cls):
-        return f"testrun complete --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
+        return "testrun complete --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
 
     @classmethod
     def get_command_testrun_complete_with_long_arguments_without_token_argument(cls):
@@ -201,7 +201,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_complete_without_token_argument(cls):
-        return f"testrun complete --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
+        return "testrun complete --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
 
     @classmethod
     def get_command_testrun_complete_with_long_arguments_without_testrun_id_argument(cls):
@@ -213,7 +213,7 @@ class Helper:
 
     @classmethod
     def get_output_for_testrun_complete_without_testrun_id_argument(cls):
-        return f"testrun complete --help' for help.\n\nError: Missing option '-ti' / '--testrun-id'.\n"
+        return "testrun complete --help' for help.\n\nError: Missing option '-ti' / '--testrun-id'.\n"
 
     @classmethod
     def get_command_results_import_with_long_arguments(cls):
