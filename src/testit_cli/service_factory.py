@@ -1,9 +1,9 @@
-from testit_cli.logger import Logger
-from testit_cli.apiclient import ApiClient
-from testit_cli.importer import Importer
-from testit_cli.parser import Parser
-from testit_cli.service import Service
-from testit_cli.models.config import Config
+from .logger import Logger
+from .apiclient import ApiClient
+from .importer import Importer
+from .parser import Parser
+from .service import Service
+from .models.config import Config
 
 
 class ServiceFactory:

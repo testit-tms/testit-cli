@@ -2,10 +2,10 @@ import hashlib
 
 from tqdm import tqdm
 
-from testit_cli.apiclient import ApiClient
-from testit_cli.converter import Converter
-from testit_cli.models.config import Config
-from testit_cli.models.testcase import TestCase
+from .apiclient import ApiClient
+from .converter import Converter
+from .models.config import Config
+from .models.testcase import TestCase
 
 
 class Importer:

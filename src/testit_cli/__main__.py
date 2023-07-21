@@ -1,4 +1,4 @@
-from testit_cli.click_commands import execute
+from .click_commands import execute
 
 
 def console_main():

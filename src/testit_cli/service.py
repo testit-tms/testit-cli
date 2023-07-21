@@ -1,9 +1,9 @@
 import logging
 
-from testit_cli.models.config import Config
-from testit_cli.parser import Parser
-from testit_cli.apiclient import ApiClient
-from testit_cli.importer import Importer
+from .models.config import Config
+from .parser import Parser
+from .apiclient import ApiClient
+from .importer import Importer
 
 
 class Service:
