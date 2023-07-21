@@ -45,6 +45,9 @@ def upload_results(url, token, configuration_id, testrun_id, separator, namespac
 @click.option("-r", "--results", type=str, required=True, help="Set directory with results file (DIR)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug):
+    if testrun_id is not None and testrun_name is not None:
+        click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
+
     config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, "")
     service = ServiceFactory().get(config)
 
