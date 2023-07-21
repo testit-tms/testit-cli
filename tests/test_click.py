@@ -1,7 +1,7 @@
 from click.testing import CliRunner
 import pytest
 
-from src.testit_cli.click_commands import execute
+from testit_cli.click_commands import execute
 from tests.helper import Helper
 
 
