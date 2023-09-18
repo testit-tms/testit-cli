@@ -4,7 +4,7 @@ import logging
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi
-from testit_api_client.models import TestRunV2PostShortModel
+from testit_api_client.models import CreateEmptyRequest
 
 from .converter import Converter
 from .models.testrun import TestRun
@@ -25,10 +25,10 @@ class ApiClient:
 
     def create_test_run(self, project_id: str, name: str):
         """Function creates test run and returns test run id."""
-        model = TestRunV2PostShortModel(project_id=project_id, name=name)
+        model = CreateEmptyRequest(project_id=project_id, name=name)
         logging.debug(f"Creating test run with model: {model}")
 
-        response = self.__test_run_api.create_empty(test_run_v2_post_short_model=model)
+        response = self.__test_run_api.create_empty(create_empty_request=model)
 
         logging.info(f'Created new testrun (ID: {response["id"]})')
         logging.debug(f"Test run created: {response}")
@@ -56,39 +56,36 @@ class ApiClient:
 
         logging.error(f"Test run {test_run_id} not found!")
 
-    def get_autotest(self, autotest_id: str, project_id: str):
+    def get_autotest(self, model: Converter.project_id_and_external_id_to_autotests_search_post_request):
         """Function returns autotest."""
-        logging.debug(f"Getting autotest {autotest_id} in project {project_id}")
+        logging.debug(f"Getting autotest {model}")
 
-        autotest = self.__autotest_api.get_all_auto_tests(
-            project_id=project_id,
-            external_id=autotest_id,
-            deleted=False)
+        autotest = self.__autotest_api.api_v2_auto_tests_search_post(api_v2_auto_tests_search_post_request=model)
 
-        logging.debug(f"Got autotest {autotest_id} in project {project_id}: {autotest}")
+        logging.debug(f"Got autotest {autotest}")
 
         return autotest
 
-    def create_autotest(self, model: Converter.test_result_to_autotest_post_model):
+    def create_autotest(self, model: Converter.test_result_to_create_autotest_request):
         """Function creates autotest and returns autotest id."""
         logging.debug(f"Creating autotest {model}")
 
-        response = self.__autotest_api.create_auto_test(auto_test_post_model=model)
+        response = self.__autotest_api.create_auto_test(create_auto_test_request=model)
 
         logging.debug(f"Created autotest {response}")
 
         return response["id"]
 
-    def update_autotest(self, model: Converter.test_result_to_autotest_put_model):
+    def update_autotest(self, model: Converter.test_result_to_update_autotest_request):
         """Function updates autotest"""
         try:
             logging.debug(f"Updating autotest {model}")
 
-            self.__autotest_api.update_auto_test(auto_test_put_model=model)
+            self.__autotest_api.update_auto_test(update_auto_test_request=model)
 
             logging.debug(f'Updated "{model.name}" successfully!')
         except Exception as exc:
-            logging.error(f'Updated "{model.name}" status: {exc.status}\n{exc.body}')
+            logging.error(f'Updated "{model.name}" status: {exc}')
 
     def send_test_result(
             self, testrun_id: str, model: Converter.test_result_to_testrun_result_post_model
@@ -104,4 +101,4 @@ class ApiClient:
                 f"Added autotest results to testrun {testrun_id} successfully"
             )
         except Exception as exc:
-            logging.error(f"Set result status: {exc.status}\n{exc.body}")
+            logging.error(f"Set result status: {exc}")

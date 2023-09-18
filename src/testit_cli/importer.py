@@ -22,12 +22,14 @@ class Importer:
             )
 
             autotest = self.__api_client.get_autotest(
-                external_id, self.__config.project_id
+                Converter.project_id_and_external_id_to_autotests_search_post_request(
+                    self.__config.project_id, external_id
+                )
             )
 
             if not autotest:
                 self.__api_client.create_autotest(
-                    Converter.test_result_to_autotest_post_model(
+                    Converter.test_result_to_create_autotest_request(
                         result, external_id, self.__config.project_id
                     )
                 )
@@ -35,7 +37,7 @@ class Importer:
                 result.set_is_flaky(autotest[0]['is_flaky'])
 
                 self.__api_client.update_autotest(
-                    Converter.test_result_to_autotest_put_model(
+                    Converter.test_result_to_update_autotest_request(
                         result, external_id, self.__config.project_id
                     )
                 )
