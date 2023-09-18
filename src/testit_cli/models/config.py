@@ -1,11 +1,8 @@
 from dataclasses import dataclass
 
-from testit_cli.models.mode import Mode
-
 
 @dataclass
 class Config:
-    mode: Mode
     url: str
     token: str
     project_id: str

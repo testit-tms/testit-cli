@@ -2,14 +2,14 @@ import hashlib
 
 from tqdm import tqdm
 
-from testit_cli.apiclient import ApiClient
-from testit_cli.configurator import Configurator
-from testit_cli.converter import Converter
-from testit_cli.models.testcase import TestCase
+from .apiclient import ApiClient
+from .converter import Converter
+from .models.config import Config
+from .models.testcase import TestCase
 
 
 class Importer:
-    def __init__(self, api_client: ApiClient, config: Configurator):
+    def __init__(self, api_client: ApiClient, config: Config):
         self.__api_client = api_client
         self.__config = config
 
@@ -22,28 +22,30 @@ class Importer:
             )
 
             autotest = self.__api_client.get_autotest(
-                external_id, self.__config.get_project_id()
+                Converter.project_id_and_external_id_to_autotests_search_post_request(
+                    self.__config.project_id, external_id
+                )
             )
 
             if not autotest:
                 self.__api_client.create_autotest(
-                    Converter.test_result_to_autotest_post_model(
-                        result, external_id, self.__config.get_project_id()
+                    Converter.test_result_to_create_autotest_request(
+                        result, external_id, self.__config.project_id
                     )
                 )
             else:
                 result.set_is_flaky(autotest[0]['is_flaky'])
 
                 self.__api_client.update_autotest(
-                    Converter.test_result_to_autotest_put_model(
-                        result, external_id, self.__config.get_project_id()
+                    Converter.test_result_to_update_autotest_request(
+                        result, external_id, self.__config.project_id
                     )
                 )
 
             self.__api_client.send_test_result(
-                self.__config.get_testrun_id(),
+                self.__config.testrun_id,
                 Converter.test_result_to_testrun_result_post_model(
-                    result, external_id, self.__config.get_configuration_id()
+                    result, external_id, self.__config.configuration_id
                 ),
             )
 
