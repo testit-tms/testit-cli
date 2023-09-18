@@ -7,5 +7,5 @@ You can see more information in [official documentation](https://docs.testit.sof
 
 | Test IT | Test IT CLI |
 |---------|-------------|
-| 3.5     | 0.1         |
+| 3.5+    | 0.1         |
 | 4.4     | 1.0         |
