@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name='testit-cli',
-    version='1.0.0',
+    version='1.0.1',
     description='This tool is the command line wrapper of Test IT allowing you to upload the test results in real time '
                 'to Test IT',
     long_description=open('README.md', "r").read(),
@@ -21,7 +21,7 @@ setup(
     py_modules=['testit_cli'],
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
-    install_requires=['testit-api-client==3.3.0', 'validators', 'tqdm'],
+    install_requires=['testit-api-client==3.3.0', 'validators', 'tqdm', 'click~=8.0.4'],
     entry_points={
         'console_scripts': [
             'testit = testit_cli.__main__:console_main'
