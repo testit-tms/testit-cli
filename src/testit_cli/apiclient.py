@@ -1,10 +1,12 @@
 """The module provides functionality for working with TMS"""
 import logging
+import os
+import typing
 
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi
-from testit_api_client.models import CreateEmptyRequest
+from testit_api_client.models import AttachmentPutModel, CreateEmptyRequest
 
 from .converter import Converter
 from .models.testrun import TestRun
@@ -23,17 +25,27 @@ class ApiClient:
         self.__autotest_api = AutoTestsApi(api_client=client)
         self.__attachments_api = AttachmentsApi(api_client=client)
 
-    def create_test_run(self, project_id: str, name: str):
+    def create_test_run(self, project_id: str, name: str, attachments: typing.List[str]) -> TestRun:
         """Function creates test run and returns test run id."""
-        model = CreateEmptyRequest(project_id=project_id, name=name)
+        model = CreateEmptyRequest(project_id=project_id, name=name, attachments=attachments)
         logging.debug(f"Creating test run with model: {model}")
 
-        response = self.__test_run_api.create_empty(create_empty_request=model)
+        test_run = self.__test_run_api.create_empty(create_empty_request=model)
 
-        logging.info(f'Created new testrun (ID: {response["id"]})')
-        logging.debug(f"Test run created: {response}")
+        logging.info(f'Created new testrun (ID: {test_run["id"]})')
+        logging.debug(f"Test run created: {test_run}")
 
-        return response["id"]
+        return Converter.test_run_v2_get_model_to_test_run(test_run)
+
+    def update_test_run(self, test_run: TestRun):
+        """Function creates test run and returns test run id."""
+        model = Converter.test_run_to_update_empty_request(test_run)
+        logging.debug(f"Updating test run with model: {model}")
+
+        response = self.__test_run_api.update_empty(update_empty_request=model)
+
+        logging.info(f'Updated testrun (ID: {test_run.id})')
+        logging.debug(f"Test run updated: {response}")
 
     def complete_test_run(self, test_run_id: str):
         """Function completes test run"""
@@ -45,14 +57,14 @@ class ApiClient:
 
         logging.info(f"Completed testrun (ID: {test_run_id})")
 
-    def get_test_run(self, test_run_id: str):
+    def get_test_run(self, test_run_id: str) -> Converter.test_run_v2_get_model_to_test_run:
         """Function gets test run and returns test run."""
         logging.debug(f"Getting test run {test_run_id}")
 
         test_run = self.__test_run_api.get_test_run_by_id(test_run_id)
         if test_run is not None:
             logging.debug(f"Got testrun (ID: {test_run_id})")
-            return TestRun(id=test_run_id, project_id=test_run["project_id"], state=test_run["state_name"].value)
+            return Converter.test_run_v2_get_model_to_test_run(test_run)
 
         logging.error(f"Test run {test_run_id} not found!")
 
@@ -102,3 +114,22 @@ class ApiClient:
             )
         except Exception as exc:
             logging.error(f"Set result status: {exc}")
+
+    def upload_attachments(self, attachments: typing.List[str]) -> typing.List[AttachmentPutModel]:
+        """Function upload attachments and returns list of AttachmentPutModel."""
+        attachment_ids = []
+
+        for attachment in attachments:
+            if os.path.isfile(attachment):
+                try:
+                    attachment_response = self.__attachments_api.api_v2_attachments_post(file=open(attachment, "rb"))
+
+                    attachment_ids.append(AttachmentPutModel(attachment_response['id']))
+
+                    logging.debug(f'Attachment "{attachment}" was uploaded')
+                except Exception as exc:
+                    logging.error(f'Upload attachment "{attachment}" status: {exc}')
+            else:
+                logging.error(f'File "{attachment}" was not found!')
+
+        return attachment_ids

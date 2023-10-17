@@ -1,11 +1,10 @@
-import glob
 import logging
-import os
 from xml.dom import minidom
 
 from .models.config import Config
 from .models.status import Status
 from .models.testcase import TestCase
+from .file_worker import FileWorker
 
 
 class Parser:
@@ -17,7 +16,7 @@ class Parser:
 
     def read_file(self):  # noqa: C901
         results = []
-        files = self.__get_files()
+        files = FileWorker.get_files(self.__path_to_results, "xml")
 
         for file in files:
 
@@ -64,15 +63,3 @@ class Parser:
         )
 
         return results
-
-    def __get_files(self):
-
-        if os.path.isdir(self.__path_to_results):
-            return glob.glob(f"{self.__path_to_results}/*.xml")
-
-        files = []
-
-        if os.path.isfile(self.__path_to_results):
-            files.append(self.__path_to_results)
-
-        return files
