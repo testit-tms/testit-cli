@@ -5,9 +5,11 @@ from testit_api_client.models import (
     AttachmentModel,
     AttachmentPutModel,
     CreateAutoTestRequest,
+    LinkModel,
+    LinkPutModel,
+    TestRunV2GetModel,
     UpdateAutoTestRequest,
-    UpdateEmptyRequest,
-    TestRunV2GetModel
+    UpdateEmptyRequest
 )
 
 from .models.testrun import TestRun
@@ -67,7 +69,7 @@ class Converter:
             description=test_run_model["description"],
             launch_source=test_run_model["launch_source"],
             attachments=cls.attachment_models_to_attachment_put_models(test_run_model["attachments"]),
-            links=test_run_model["links"],
+            links=cls.link_models_to_link_put_models(test_run_model["links"])
         )
 
     @classmethod
@@ -85,6 +87,29 @@ class Converter:
     @staticmethod
     def attachment_model_to_attachment_put_model(attachment_model: AttachmentModel) -> AttachmentPutModel:
         return AttachmentPutModel(id=attachment_model.id)
+
+    @classmethod
+    def link_models_to_link_put_models(
+            cls,
+            link_models: list[LinkModel]) -> list[LinkPutModel]:
+        link_put_models = []
+
+        for link_model in link_models:
+            link_put_models.append(
+                cls.link_model_to_link_put_model(link_model))
+
+        return link_put_models
+
+    @staticmethod
+    def link_model_to_link_put_model(link_model: LinkModel) -> LinkPutModel:
+        return LinkPutModel(
+            url=link_model.url,
+            id=link_model.id,
+            title=link_model.title,
+            description=link_model.description,
+            type=link_model.type,
+            has_info=link_model.has_info
+        )
 
     @staticmethod
     def test_run_to_update_empty_request(test_run: TestRun) -> UpdateEmptyRequest:

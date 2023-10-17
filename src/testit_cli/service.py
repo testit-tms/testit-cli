@@ -51,9 +51,12 @@ class Service:
         )
 
     def __upload_attachments(self) -> list:
-        return self.__api_client.upload_attachments(
-            FileWorker.get_files(self.__config.path_to_attachments)
-        )
+        files = []
+
+        for path_to_attachments in self.__config.paths_to_attachments:
+            files.extend(FileWorker.get_files(path_to_attachments))
+
+        return self.__api_client.upload_attachments(files)
 
     def __upload_results(self):
         logging.info("Collecting log files ...")
@@ -75,7 +78,7 @@ class Service:
         logging.info("Successfully sent test results")
 
     def __update_test_run(self, test_run: TestRun):
-        test_run.attachments = test_run.attachments + self.__upload_attachments()
+        test_run.attachments.extend(self.__upload_attachments())
 
         self.__api_client.update_test_run(
             test_run
