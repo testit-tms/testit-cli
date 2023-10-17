@@ -1,6 +1,7 @@
 """The module provides functionality for working with TMS"""
 import logging
 import os
+import typing
 
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration
@@ -24,7 +25,7 @@ class ApiClient:
         self.__autotest_api = AutoTestsApi(api_client=client)
         self.__attachments_api = AttachmentsApi(api_client=client)
 
-    def create_test_run(self, project_id: str, name: str, attachments: list[str]) -> TestRun:
+    def create_test_run(self, project_id: str, name: str, attachments: typing.List[str]) -> TestRun:
         """Function creates test run and returns test run id."""
         model = CreateEmptyRequest(project_id=project_id, name=name, attachments=attachments)
         logging.debug(f"Creating test run with model: {model}")
@@ -114,7 +115,7 @@ class ApiClient:
         except Exception as exc:
             logging.error(f"Set result status: {exc}")
 
-    def upload_attachments(self, attachments: list[str]) -> list[AttachmentPutModel]:
+    def upload_attachments(self, attachments: typing.List[str]) -> typing.List[AttachmentPutModel]:
         """Function upload attachments and returns list of AttachmentPutModel."""
         attachment_ids = []
 

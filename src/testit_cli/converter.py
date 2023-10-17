@@ -1,3 +1,5 @@
+import typing
+
 from testit_api_client.models import (
     AutotestsSelectModelFilter,
     AutoTestResultsForTestRunModel,
@@ -75,7 +77,7 @@ class Converter:
     @classmethod
     def attachment_models_to_attachment_put_models(
             cls,
-            attachment_models: list[AttachmentModel]) -> list[AttachmentPutModel]:
+            attachment_models: typing.List[AttachmentModel]) -> typing.List[AttachmentPutModel]:
         attachment_put_models = []
 
         for attachment_model in attachment_models:
@@ -91,7 +93,7 @@ class Converter:
     @classmethod
     def link_models_to_link_put_models(
             cls,
-            link_models: list[LinkModel]) -> list[LinkPutModel]:
+            link_models: typing.List[LinkModel]) -> typing.List[LinkPutModel]:
         link_put_models = []
 
         for link_model in link_models:
