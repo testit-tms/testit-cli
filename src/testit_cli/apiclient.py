@@ -1,7 +1,6 @@
 """The module provides functionality for working with TMS"""
 import logging
 import os
-import typing
 
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration

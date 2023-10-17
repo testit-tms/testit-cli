@@ -1,6 +1,4 @@
-import glob
 import logging
-import os
 from xml.dom import minidom
 
 from .models.config import Config
