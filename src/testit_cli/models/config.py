@@ -15,3 +15,4 @@ class Config:
     results: str
     is_debug: bool
     output: str
+    path_to_attachments: str

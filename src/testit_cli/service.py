@@ -1,8 +1,10 @@
 import logging
 
 from .models.config import Config
+from .models.testrun import TestRun
 from .parser import Parser
 from .apiclient import ApiClient
+from .file_worker import FileWorker
 from .importer import Importer
 
 
@@ -21,22 +23,36 @@ class Service:
 
     def import_results(self):
         self.__upload_results()
-        self.finished_testrun()
+        self.finished_test_run()
 
     def upload_results(self):
         self.__upload_results()
 
-    def create_testrun(self):
-        test_run_id = self.__create_test_run()
+    def create_test_run(self):
+        test_run = self.__create_test_run_with_attachments()
         with open(self.__config.output, "w") as text_file:
-            text_file.write(test_run_id)
+            text_file.write(test_run.id)
 
-    def finished_testrun(self):
+    def finished_test_run(self):
         self.__api_client.complete_test_run(self.__config.testrun_id)
 
-    def __create_test_run(self):
+    def __create_test_run_with_attachments(self) -> TestRun:
         return self.__api_client.create_test_run(
-            self.__config.project_id, self.__config.testrun_name
+            self.__config.project_id,
+            self.__config.testrun_name,
+            self.__upload_attachments()
+        )
+
+    def __create_test_run_without_attachments(self):
+        return self.__api_client.create_test_run(
+            self.__config.project_id,
+            self.__config.testrun_name,
+            []
+        )
+
+    def __upload_attachments(self) -> list:
+        return self.__api_client.upload_attachments(
+            FileWorker.get_files(self.__config.path_to_attachments)
         )
 
     def __upload_results(self):
@@ -45,8 +61,8 @@ class Service:
         results = self.__parser.read_file()
 
         if self.__config.testrun_id is None:
-            test_run_id = self.__create_test_run()
-            self.__config.testrun_id = test_run_id
+            test_run = self.__create_test_run_without_attachments()
+            self.__config.testrun_id = test_run.id
         else:
             test_run = self.__api_client.get_test_run(self.__config.testrun_id)
             self.__config.project_id = test_run.project_id
@@ -54,5 +70,13 @@ class Service:
         logging.info("Sending test results to Test IT ...")
 
         self.__importer.send_results(results)
+        self.__update_test_run(test_run)
 
         logging.info("Successfully sent test results")
+
+    def __update_test_run(self, test_run: TestRun):
+        test_run.attachments = test_run.attachments + self.__upload_attachments()
+
+        self.__api_client.update_test_run(
+            test_run
+        )

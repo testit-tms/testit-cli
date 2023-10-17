@@ -1,10 +1,16 @@
 from testit_api_client.models import (
     AutotestsSelectModelFilter,
+    AutoTestResultsForTestRunModel,
     ApiV2AutoTestsSearchPostRequest,
+    AttachmentModel,
+    AttachmentPutModel,
     CreateAutoTestRequest,
     UpdateAutoTestRequest,
-    AutoTestResultsForTestRunModel,
+    UpdateEmptyRequest,
+    TestRunV2GetModel
 )
+
+from .models.testrun import TestRun
 
 
 class Converter:
@@ -49,4 +55,44 @@ class Converter:
             traces=result.get_trace(),
             duration=round(result.get_duration()),
             message=result.get_message(),
+        )
+
+    @classmethod
+    def test_run_v2_get_model_to_test_run(cls, test_run_model: TestRunV2GetModel) -> TestRun:
+        return TestRun(
+            id=test_run_model["id"],
+            project_id=test_run_model["project_id"],
+            state=test_run_model["state_name"].value,
+            name=test_run_model["name"],
+            description=test_run_model["description"],
+            launch_source=test_run_model["launch_source"],
+            attachments=cls.attachment_models_to_attachment_put_models(test_run_model["attachments"]),
+            links=test_run_model["links"],
+        )
+
+    @classmethod
+    def attachment_models_to_attachment_put_models(
+            cls,
+            attachment_models: list[AttachmentModel]) -> list[AttachmentPutModel]:
+        attachment_put_models = []
+
+        for attachment_model in attachment_models:
+            attachment_put_models.append(
+                cls.attachment_model_to_attachment_put_model(attachment_model))
+
+        return attachment_put_models
+
+    @staticmethod
+    def attachment_model_to_attachment_put_model(attachment_model: AttachmentModel) -> AttachmentPutModel:
+        return AttachmentPutModel(id=attachment_model.id)
+
+    @staticmethod
+    def test_run_to_update_empty_request(test_run: TestRun) -> UpdateEmptyRequest:
+        return UpdateEmptyRequest(
+            id=test_run.id,
+            name=test_run.name,
+            description=test_run.description,
+            launch_source=test_run.launch_source,
+            attachments=test_run.attachments,
+            links=test_run.links
         )

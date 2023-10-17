@@ -26,9 +26,10 @@ def results():
 @click.option("-cn", "--classname", type=str, help="Set classname (ClassName01)", default=None)
 @click.option("-r", "--results", type=str, required=True, help="Set directory with results file (DIR)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
-def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug):
+@click.option("-a", "--attachments", type=str, help="Path to attachments for test run", default="")
+def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments):
     """Uploading results from different streams"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, results, debug, "")
+    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, results, debug, "", attachments)
     service = ServiceFactory().get(config)
 
     service.upload_results()
@@ -46,12 +47,13 @@ def upload_results(url, token, configuration_id, testrun_id, separator, namespac
 @click.option("-cn", "--classname", type=str, help="Set classname (ClassName01)", default=None)
 @click.option("-r", "--results", type=str, required=True, help="Set directory with results file (DIR)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
-def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug):
+@click.option("-a", "--attachments", type=str, help="Path to attachments for test run", default="")
+def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, attachments):
     """Uploading the first test results"""
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
 
-    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, "")
+    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, "", attachments)
     service = ServiceFactory().get(config)
 
     service.import_results()
@@ -70,12 +72,13 @@ def testrun():
 @click.option("-tn", "--testrun-name", type=str, envvar='TMS_TEST_RUN_NAME', help="Set test run name (TestRun01)", default=None)
 @click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
-def create_testrun(url, token, project_id, testrun_name, output, debug):
+@click.option("-a", "--attachments", type=str, help="Path to attachments for test run", default="")
+def create_test_run(url, token, project_id, testrun_name, output, debug, attachments):
     """Creating a new test run"""
-    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", "", debug, output)
+    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", "", debug, output, attachments)
     service = ServiceFactory().get(config)
 
-    service.create_testrun()
+    service.create_test_run()
 
 
 @testrun.command("complete")
@@ -83,9 +86,10 @@ def create_testrun(url, token, project_id, testrun_name, output, debug):
 @click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
 @click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', required=True, help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", callback=validate_uuid)
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
-def complete_testrun(url, token, testrun_id, debug):
+@click.option("-a", "--attachments", type=str, help="Path to attachments for test run", default="")
+def complete_test_run(url, token, testrun_id, debug, attachments):
     """Completing the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", "", debug, "")
+    config = Config(url, token, "", "", testrun_id, "", "", "", "", "", debug, "", attachments)
     service = ServiceFactory().get(config)
 
-    service.finished_testrun()
+    service.finished_test_run()
