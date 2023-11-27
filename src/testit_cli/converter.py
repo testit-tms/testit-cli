@@ -2,6 +2,7 @@ import typing
 
 from testit_api_client.models import (
     AutotestsSelectModelFilter,
+    AutotestsSelectModelIncludes,
     AutoTestResultsForTestRunModel,
     ApiV2AutoTestsSearchPostRequest,
     AttachmentModel,
@@ -24,8 +25,12 @@ class Converter:
             project_ids=[project_id],
             external_ids=[external_id],
             is_deleted=False)
+        autotests_includes = AutotestsSelectModelIncludes(
+            include_steps=False,
+            include_links=False,
+            include_labels=False)
 
-        return ApiV2AutoTestsSearchPostRequest(filter=autotests_filter)
+        return ApiV2AutoTestsSearchPostRequest(filter=autotests_filter, includes=autotests_includes)
 
     @staticmethod
     def test_result_to_create_autotest_request(result, external_id: str, project_id: str):
