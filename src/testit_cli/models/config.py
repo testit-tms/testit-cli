@@ -16,3 +16,4 @@ class Config:
     is_debug: bool
     output: str
     paths_to_attachments: list
+    disable_cert_validation: bool

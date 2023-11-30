@@ -11,7 +11,7 @@ class ServiceFactory:
     def get(cls, config: Config) -> Service:
         Logger.register_logger(config.is_debug)
 
-        api_client = ApiClient(config.url, config.token)
+        api_client = ApiClient(config.url, config.token, config.disable_cert_validation)
         parser = Parser(config)
         importer = Importer(api_client, config)
 
