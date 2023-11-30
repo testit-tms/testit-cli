@@ -27,9 +27,10 @@ def results():
 @click.option("-r", "--results", type=str, required=True, help="Set directory with results file (DIR)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-a", "--attachments", multiple=True, help="Path to attachments for test run (multiple)", default=[])
-def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments):
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments, disable_cert_validation):
     """Uploading results from different streams"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, results, debug, "", attachments)
+    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, results, debug, "", attachments, disable_cert_validation)
     service = ServiceFactory().get(config)
 
     service.upload_results()
@@ -48,12 +49,13 @@ def upload_results(url, token, configuration_id, testrun_id, separator, namespac
 @click.option("-r", "--results", type=str, required=True, help="Set directory with results file (DIR)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-a", "--attachments", multiple=True, help="Path to attachments for test run (multiple)", default=[])
-def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, attachments):
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, attachments, disable_cert_validation):
     """Uploading the first test results"""
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
 
-    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, "", attachments)
+    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, "", attachments, disable_cert_validation)
     service = ServiceFactory().get(config)
 
     service.import_results()
@@ -73,9 +75,10 @@ def testrun():
 @click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-a", "--attachments", multiple=True, help="Path to attachments for test run (multiple)", default=[])
-def create_test_run(url, token, project_id, testrun_name, output, debug, attachments):
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def create_test_run(url, token, project_id, testrun_name, output, debug, attachments, disable_cert_validation):
     """Creating a new test run"""
-    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", "", debug, output, attachments)
+    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", "", debug, output, attachments, disable_cert_validation)
     service = ServiceFactory().get(config)
 
     service.create_test_run()
@@ -87,9 +90,10 @@ def create_test_run(url, token, project_id, testrun_name, output, debug, attachm
 @click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', required=True, help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", callback=validate_uuid)
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-a", "--attachments", multiple=True, help="Path to attachments for test run (multiple)", default=[])
-def complete_test_run(url, token, testrun_id, debug, attachments):
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Completing the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", "", debug, "", attachments)
+    config = Config(url, token, "", "", testrun_id, "", "", "", "", "", debug, "", attachments, disable_cert_validation)
     service = ServiceFactory().get(config)
 
     service.finished_test_run()

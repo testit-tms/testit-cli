@@ -15,12 +15,16 @@ from .models.testrun import TestRun
 class ApiClient:
     """Class representing a api client"""
 
-    def __init__(self, url: str, token: str):
+    def __init__(self, url: str, token: str, disable_cert_validation: bool):
+        client_config = Configuration(host=url)
+        client_config.verify_ssl = not disable_cert_validation
+
         client = TmsClient(
-            configuration=Configuration(host=url),
+            configuration=client_config,
             header_name="Authorization",
             header_value="PrivateToken " + token,
         )
+
         self.__test_run_api = TestRunsApi(api_client=client)
         self.__autotest_api = AutoTestsApi(api_client=client)
         self.__attachments_api = AttachmentsApi(api_client=client)
