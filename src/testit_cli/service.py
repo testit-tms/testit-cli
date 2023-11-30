@@ -4,6 +4,7 @@ from .models.config import Config
 from .models.testrun import TestRun
 from .parser import Parser
 from .apiclient import ApiClient
+from .dir_worker import DirWorker
 from .file_worker import FileWorker
 from .importer import Importer
 
@@ -30,6 +31,9 @@ class Service:
 
     def create_test_run(self):
         test_run = self.__create_test_run_with_attachments()
+
+        DirWorker.create_dir(self.__config.output)
+
         with open(self.__config.output, "w") as text_file:
             text_file.write(test_run.id)
 
