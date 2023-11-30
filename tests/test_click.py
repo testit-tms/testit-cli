@@ -29,7 +29,7 @@ def test_run_with_another_command(runner):
 
 @pytest.mark.parametrize("command, message", [
     ("results", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  import  Uploading the first test results\n  upload  Uploading results from different streams\n"),
-    ("testrun", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  complete  Completing the test run\n  create    Creating a new test run")])
+    ("testrun", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  complete            Completing the test run\n  create              Creating a new test run\n  upload_attachments  Uploading attachments for the test run\n")])
 def test_run_with_command(runner, command, message):
     result = runner.invoke(execute, [command])
 
@@ -80,7 +80,13 @@ def test_run_results_with_another_command(runner):
     (Helper.get_command_testrun_complete_with_long_arguments_without_token_argument(), Helper.get_output_for_testrun_complete_without_token_argument()),
     (Helper.get_command_testrun_complete_with_short_arguments_without_token_argument(), Helper.get_output_for_testrun_complete_without_token_argument()),
     (Helper.get_command_testrun_complete_with_long_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_complete_without_testrun_id_argument()),
-    (Helper.get_command_testrun_complete_with_short_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_complete_without_testrun_id_argument())])
+    (Helper.get_command_testrun_complete_with_short_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_complete_without_testrun_id_argument()),
+    (Helper.get_command_testrun_upload_attachments_with_long_arguments_without_url_argument(), Helper.get_output_for_testrun_upload_attachments_without_url_argument()),
+    (Helper.get_command_testrun_upload_attachments_with_short_arguments_without_url_argument(), Helper.get_output_for_testrun_upload_attachments_without_url_argument()),
+    (Helper.get_command_testrun_upload_attachments_with_long_arguments_without_token_argument(), Helper.get_output_for_testrun_upload_attachments_without_token_argument()),
+    (Helper.get_command_testrun_upload_attachments_with_short_arguments_without_token_argument(), Helper.get_output_for_testrun_upload_attachments_without_token_argument()),
+    (Helper.get_command_testrun_upload_attachments_with_long_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_upload_attachments_without_testrun_id_argument()),
+    (Helper.get_command_testrun_upload_attachments_with_short_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_upload_attachments_without_testrun_id_argument())])
 def test_run_results_with_command_without_arguments(runner, commands, output):
     result = runner.invoke(execute, commands)
 
@@ -99,13 +105,16 @@ def test_run_results_with_command_without_arguments(runner, commands, output):
     Helper.get_command_results_upload_with_all_short_arguments(),
     Helper.get_command_testrun_complete_with_long_arguments(),
     Helper.get_command_testrun_create_with_long_arguments(),
+    Helper.get_command_testrun_upload_attachments_with_long_arguments(),
     Helper.get_command_testrun_complete_with_short_arguments(),
     Helper.get_command_testrun_create_with_short_arguments(),
+    Helper.get_command_testrun_upload_attachments_with_short_arguments(),
     Helper.get_command_testrun_complete_with_all_long_arguments(),
     Helper.get_command_testrun_create_with_all_long_arguments(),
+    Helper.get_command_testrun_upload_attachments_with_all_long_arguments(),
     Helper.get_command_testrun_complete_with_all_short_arguments(),
-    Helper.get_command_testrun_create_with_all_short_arguments()
-])
+    Helper.get_command_testrun_create_with_all_short_arguments(),
+    Helper.get_command_testrun_upload_attachments_with_all_short_arguments()])
 def test_run_with_commands_and_arguments(runner, commands_with_args):
     result = runner.invoke(execute, commands_with_args)
 
@@ -116,7 +125,8 @@ def test_run_with_commands_and_arguments(runner, commands_with_args):
     Helper.get_command_results_upload_with_another_argument(),
     Helper.get_command_results_import_with_another_argument(),
     Helper.get_command_testrun_complete_with_another_argument(),
-    Helper.get_command_testrun_create_with_another_argument()])
+    Helper.get_command_testrun_create_with_another_argument(),
+    Helper.get_command_testrun_upload_attachments_with_another_argument()])
 def test_run_with_command_and_another_argument(runner, commands_with_another_arg):
     result = runner.invoke(execute, commands_with_another_arg)
 

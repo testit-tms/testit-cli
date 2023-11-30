@@ -29,9 +29,9 @@ class ApiClient:
         self.__autotest_api = AutoTestsApi(api_client=client)
         self.__attachments_api = AttachmentsApi(api_client=client)
 
-    def create_test_run(self, project_id: str, name: str, attachments: typing.List[str]) -> TestRun:
+    def create_test_run(self, project_id: str, name: str) -> TestRun:
         """Function creates test run and returns test run id."""
-        model = CreateEmptyRequest(project_id=project_id, name=name, attachments=attachments)
+        model = CreateEmptyRequest(project_id=project_id, name=name)
         logging.debug(f"Creating test run with model: {model}")
 
         test_run = self.__test_run_api.create_empty(create_empty_request=model)
@@ -42,7 +42,7 @@ class ApiClient:
         return Converter.test_run_v2_get_model_to_test_run(test_run)
 
     def update_test_run(self, test_run: TestRun):
-        """Function creates test run and returns test run id."""
+        """Function updates test run."""
         model = Converter.test_run_to_update_empty_request(test_run)
         logging.debug(f"Updating test run with model: {model}")
 
@@ -52,7 +52,7 @@ class ApiClient:
         logging.debug(f"Test run updated: {response}")
 
     def complete_test_run(self, test_run_id: str):
-        """Function completes test run"""
+        """Function completes test run."""
         logging.debug(f"Completing test run {test_run_id}")
 
         test_run = self.get_test_run(test_run_id)
