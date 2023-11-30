@@ -12,7 +12,7 @@ class Config:
     separator: str
     namespace: str
     classname: str
-    results: str
+    results: list
     is_debug: bool
     output: str
     paths_to_attachments: list
