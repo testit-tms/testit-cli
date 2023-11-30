@@ -9,14 +9,17 @@ from .file_worker import FileWorker
 
 class Parser:
     def __init__(self, config: Config):
-        self.__path_to_results = config.results
+        self.__paths_to_results = config.results
         self.__separator = config.separator
         self.__namespace = config.namespace
         self.__classname = config.classname
 
     def read_file(self):  # noqa: C901
         results = []
-        files = FileWorker.get_files(self.__path_to_results, "xml")
+        files = []
+
+        for path_to_results in self.__paths_to_results:
+            files.extend(FileWorker.get_files(path_to_results, "xml"))
 
         for file in files:
 
