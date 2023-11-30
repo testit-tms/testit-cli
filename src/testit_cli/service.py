@@ -30,7 +30,8 @@ class Service:
         self.__upload_results()
 
     def create_test_run(self):
-        test_run = self.__create_test_run_with_attachments()
+        test_run = self.__create_test_run()
+        self.__update_test_run_with_attachments(test_run)
 
         DirWorker.create_dir(self.__config.output)
 
@@ -38,20 +39,19 @@ class Service:
             text_file.write(test_run.id)
 
     def finished_test_run(self):
+        test_run = self.__api_client.get_test_run(self.__config.testrun_id)
+        self.__update_test_run_with_attachments(test_run)
+
         self.__api_client.complete_test_run(self.__config.testrun_id)
 
-    def __create_test_run_with_attachments(self) -> TestRun:
-        return self.__api_client.create_test_run(
-            self.__config.project_id,
-            self.__config.testrun_name,
-            self.__upload_attachments()
-        )
+    def upload_attachments_for_test_run(self):
+        test_run = self.__api_client.get_test_run(self.__config.testrun_id)
+        self.__update_test_run_with_attachments(test_run)
 
-    def __create_test_run_without_attachments(self):
+    def __create_test_run(self) -> TestRun:
         return self.__api_client.create_test_run(
             self.__config.project_id,
-            self.__config.testrun_name,
-            []
+            self.__config.testrun_name
         )
 
     def __upload_attachments(self) -> list:
@@ -68,7 +68,7 @@ class Service:
         results = self.__parser.read_file()
 
         if self.__config.testrun_id is None:
-            test_run = self.__create_test_run_without_attachments()
+            test_run = self.__create_test_run()
             self.__config.testrun_id = test_run.id
         else:
             test_run = self.__api_client.get_test_run(self.__config.testrun_id)
@@ -77,13 +77,11 @@ class Service:
         logging.info("Sending test results to Test IT ...")
 
         self.__importer.send_results(results)
-        self.__update_test_run(test_run)
+
+        self.__update_test_run_with_attachments(test_run)
 
         logging.info("Successfully sent test results")
 
-    def __update_test_run(self, test_run: TestRun):
+    def __update_test_run_with_attachments(self, test_run: TestRun):
         test_run.attachments.extend(self.__upload_attachments())
-
-        self.__api_client.update_test_run(
-            test_run
-        )
+        self.__api_client.update_test_run(test_run)

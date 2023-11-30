@@ -216,6 +216,42 @@ class Helper:
         return "testrun complete --help' for help.\n\nError: Missing option '-ti' / '--testrun-id'.\n"
 
     @classmethod
+    def get_command_testrun_upload_attachments_with_long_arguments_without_url_argument(cls):
+        return ["testrun", "upload_attachments", "--token", cls.__TOKEN, "--testrun-id", cls.__UUID]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_short_arguments_without_url_argument(cls):
+        return ["testrun", "upload_attachments", "-t", cls.__TOKEN, "-ti", cls.__UUID]
+
+    @classmethod
+    def get_output_for_testrun_upload_attachments_without_url_argument(cls):
+        return "testrun upload_attachments --help' for help.\n\nError: Missing option '-u' / '--url'.\n"
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_long_arguments_without_token_argument(cls):
+        return ["testrun", "upload_attachments", "--url", cls.__URL, "--testrun-id", cls.__UUID]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_short_arguments_without_token_argument(cls):
+        return ["testrun", "upload_attachments", "-u", cls.__URL, "-ti", cls.__UUID]
+
+    @classmethod
+    def get_output_for_testrun_upload_attachments_without_token_argument(cls):
+        return "testrun upload_attachments --help' for help.\n\nError: Missing option '-t' / '--token'.\n"
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_long_arguments_without_testrun_id_argument(cls):
+        return ["testrun", "upload_attachments", "--url", cls.__URL, "--token", cls.__TOKEN]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_short_arguments_without_testrun_id_argument(cls):
+        return ["testrun", "upload_attachments", "-u", cls.__URL, "-t", cls.__TOKEN]
+
+    @classmethod
+    def get_output_for_testrun_upload_attachments_without_testrun_id_argument(cls):
+        return "testrun upload_attachments --help' for help.\n\nError: Missing option '-ti' / '--testrun-id'.\n"
+
+    @classmethod
     def get_command_results_import_with_long_arguments(cls):
         return ["results", "import", "--url", cls.__URL, "--token", cls.__TOKEN, "--project-id", cls.__UUID, "--configuration-id", cls.__UUID, "--results", cls.__DIR_PATH]
 
@@ -246,6 +282,14 @@ class Helper:
     @classmethod
     def get_command_testrun_complete_with_short_arguments(cls):
         return ["testrun", "complete", "-u", cls.__URL, "-t", cls.__TOKEN, "-ti", cls.__UUID]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_long_arguments(cls):
+        return ["testrun", "upload_attachments", "--url", cls.__URL, "--token", cls.__TOKEN, "--testrun-id", cls.__UUID, "--attachments", cls.__DIR_PATH]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_short_arguments(cls):
+        return ["testrun", "upload_attachments", "-u", cls.__URL, "-t", cls.__TOKEN, "-ti", cls.__UUID, "-a", cls.__DIR_PATH]
 
     @classmethod
     def get_command_results_import_with_all_long_arguments(cls):
@@ -293,5 +337,17 @@ class Helper:
         return cls.get_command_testrun_complete_with_short_arguments() + ["-d"]
 
     @classmethod
+    def get_command_testrun_upload_attachments_with_all_long_arguments(cls):
+        return cls.get_command_testrun_upload_attachments_with_long_arguments() + ["--debug"]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_all_short_arguments(cls):
+        return cls.get_command_testrun_upload_attachments_with_short_arguments() + ["-d"]
+
+    @classmethod
     def get_command_testrun_complete_with_another_argument(cls):
         return ["testrun", "complete", "--start"]
+
+    @classmethod
+    def get_command_testrun_upload_attachments_with_another_argument(cls):
+        return ["testrun", "upload_attachments", "--start"]
