@@ -11,7 +11,7 @@ def runner():
 
 
 def test_run_without_command(runner):
-    message = "Options:\n  --help  Show this message and exit.\n\nCommands:\n  results\n  testrun\n"
+    message = "Options:\n  --help  Show this message and exit.\n\nCommands:\n  results  Uploading the test results\n  testrun  Working with the test run\n"
     result = runner.invoke(execute, [])
 
     assert message in result.output
@@ -28,8 +28,8 @@ def test_run_with_another_command(runner):
 
 
 @pytest.mark.parametrize("command, message", [
-    ("results", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  import\n  upload\n"),
-    ("testrun", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  complete\n  create\n")])
+    ("results", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  import  Uploading the first test results\n  upload  Uploading results from different streams\n"),
+    ("testrun", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  complete  Completing the test run\n  create    Creating a new test run")])
 def test_run_with_command(runner, command, message):
     result = runner.invoke(execute, [command])
 
