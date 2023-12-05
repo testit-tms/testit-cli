@@ -1,5 +1,9 @@
 # Test IT CLI
 
+[![Release
+Status](https://img.shields.io/pypi/v/testit-cli?style=plastic)](https://pypi.python.org/pypi/testit-cli)
+[![Downloads](https://img.shields.io/pypi/dm/testit-cli?style=plastic)](https://pypi.python.org/pypi/testit-cli)
+
 This tool is the command line wrapper of Test IT allowing you to upload the test results in real time to Test IT.
 You can see more information in [official documentation](https://docs.testit.software/user-guide/integrations/cli.html)
 
