@@ -21,6 +21,7 @@ class TestCase:
         self.__class_name = class_name
         self.__duration = timedelta(seconds=float(duration))
         self.__status = Status.PASSED
+        self.__trace = ""
 
     def get_name(self):
         return self.__name

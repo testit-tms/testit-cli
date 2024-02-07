@@ -8,6 +8,16 @@ from .file_worker import FileWorker
 
 
 class Parser:
+    __FAILURE_NODE_NAMES = [
+        "error",
+        "failure",
+        "rerunFailure",
+        "rerunError",
+        "flakyFailure",
+        "flakyError",
+        "system-out",
+        "system-err"]
+
     def __init__(self, config: Config):
         self.__paths_to_results = config.results
         self.__separator = config.separator
@@ -48,11 +58,11 @@ class Parser:
 
                 if elem.childNodes is not None:
                     for child in elem.childNodes:
-                        if child.nodeName == "error" or child.nodeName == "failure":
+                        if child.nodeName in self.__FAILURE_NODE_NAMES:
                             if "message" in child.attributes:
                                 testcase.set_message(child.attributes["message"].value)
-                            if child.firstChild is not None:
-                                testcase.set_trace(child.firstChild.wholeText)
+                            testcase.set_trace(
+                                testcase.get_trace() + self.__form_trace(child.childNodes))
                             testcase.set_status(Status.FAILED)
                         elif child.nodeName == "skipped":
                             if "message" in child.attributes:
@@ -66,3 +76,14 @@ class Parser:
         )
 
         return results
+
+    def __form_trace(self, child_nodes: list) -> str:
+        trace = ""
+
+        for child in child_nodes:
+            if "data" in dir(child) and child.data.replace("\t", "").replace("\n", "") != "":
+                trace += child.data + "\n"
+            if any(child.childNodes):
+                trace += self.__form_trace(child.childNodes)
+
+        return trace
