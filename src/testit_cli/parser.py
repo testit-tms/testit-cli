@@ -17,6 +17,7 @@ class Parser:
         "flakyError",
         "system-out",
         "system-err"]
+    __MESSAGE_ATTRIBUTE_NAME = "message"
 
     def __init__(self, config: Config):
         self.__paths_to_results = config.results
@@ -59,14 +60,14 @@ class Parser:
                 if elem.childNodes is not None:
                     for child in elem.childNodes:
                         if child.nodeName in self.__FAILURE_NODE_NAMES:
-                            if "message" in child.attributes:
-                                testcase.set_message(child.attributes["message"].value)
+                            if self.__MESSAGE_ATTRIBUTE_NAME in child.attributes:
+                                testcase.set_message(child.attributes[self.__MESSAGE_ATTRIBUTE_NAME].value)
                             testcase.set_trace(
                                 testcase.get_trace() + self.__form_trace(child.childNodes))
                             testcase.set_status(Status.FAILED)
                         elif child.nodeName == "skipped":
-                            if "message" in child.attributes:
-                                testcase.set_message(child.attributes["message"].value)
+                            if self.__MESSAGE_ATTRIBUTE_NAME in child.attributes:
+                                testcase.set_message(child.attributes[self.__MESSAGE_ATTRIBUTE_NAME].value)
                             testcase.set_status(Status.SKIPPED)
 
                 results.append(testcase)
