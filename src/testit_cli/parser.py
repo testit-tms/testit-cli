@@ -77,13 +77,14 @@ class Parser:
 
         return results
 
-    def __form_trace(self, child_nodes: list) -> str:
+    @classmethod
+    def __form_trace(cls, child_nodes: list) -> str:
         trace = ""
 
         for child in child_nodes:
             if "data" in dir(child) and child.data.replace("\t", "").replace("\n", "") != "":
                 trace += child.data + "\n"
             if any(child.childNodes):
-                trace += self.__form_trace(child.childNodes)
+                trace += cls.__form_trace(child.childNodes)
 
         return trace
