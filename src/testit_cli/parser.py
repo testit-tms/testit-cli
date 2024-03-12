@@ -15,7 +15,6 @@ class Parser:
         "rerunError",
         "flakyFailure",
         "flakyError",
-        "system-out",
         "system-err"]
     __MESSAGE_ATTRIBUTE_NAME = "message"
 
@@ -59,16 +58,18 @@ class Parser:
 
                 if elem.childNodes is not None:
                     for child in elem.childNodes:
-                        if child.nodeName in self.__FAILURE_NODE_NAMES:
-                            if self.__MESSAGE_ATTRIBUTE_NAME in child.attributes:
-                                testcase.set_message(child.attributes[self.__MESSAGE_ATTRIBUTE_NAME].value)
-                            testcase.set_trace(
-                                testcase.get_trace() + self.__form_trace(child.childNodes))
-                            testcase.set_status(Status.FAILED)
-                        elif child.nodeName == "skipped":
-                            if self.__MESSAGE_ATTRIBUTE_NAME in child.attributes:
-                                testcase.set_message(child.attributes[self.__MESSAGE_ATTRIBUTE_NAME].value)
+                        if child.attributes and self.__MESSAGE_ATTRIBUTE_NAME in child.attributes:
+                            testcase.set_message(child.attributes[self.__MESSAGE_ATTRIBUTE_NAME].value)
+
+                        if child.nodeName == "skipped":
                             testcase.set_status(Status.SKIPPED)
+
+                            continue
+                        elif child.nodeName in self.__FAILURE_NODE_NAMES:
+                            testcase.set_status(Status.FAILED)
+
+                        testcase.set_trace(
+                            testcase.get_trace() + self.__form_trace(child.childNodes))
 
                 results.append(testcase)
 
