@@ -24,7 +24,7 @@ class Service:
 
     def import_results(self):
         self.__upload_results()
-        self.finished_test_run()
+        self.__api_client.complete_test_run(self.__config.testrun_id)
 
     def upload_results(self):
         self.__upload_results()

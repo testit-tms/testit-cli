@@ -18,6 +18,10 @@ class Parser:
         "system-out",
         "system-err"]
     __MESSAGE_ATTRIBUTE_NAME = "message"
+    __TAGS_OF_TESTS = [
+        "testcase",
+        "test-case"
+    ]
 
     def __init__(self, config: Config):
         self.__paths_to_results = config.results
@@ -33,9 +37,8 @@ class Parser:
             files.extend(FileWorker.get_files(path_to_results, "xml"))
 
         for file in files:
-
             xml = minidom.parse(file)
-            testcases = xml.getElementsByTagName("testcase")
+            testcases = self.__get_testcases(xml)
 
             for elem in testcases:
                 name = elem.attributes["name"].value
@@ -89,3 +92,13 @@ class Parser:
                 trace += cls.__form_trace(child.childNodes)
 
         return trace
+
+    @classmethod
+    def __get_testcases(cls, xml) -> list:
+        for tag in cls.__TAGS_OF_TESTS:
+            testcases = xml.getElementsByTagName(tag)
+
+            if testcases:
+                return testcases
+
+        return []
