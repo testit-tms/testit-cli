@@ -14,3 +14,4 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 3.5+    | 0.1         |
 | 4.4     | 1.0         |
 | 4.5     | 1.2         |
+| 4.6     | 1.5         |
