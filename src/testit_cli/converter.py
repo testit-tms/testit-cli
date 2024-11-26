@@ -7,12 +7,12 @@ from testit_api_client.models import (
     ApiV2AutoTestsSearchPostRequest,
     AttachmentModel,
     AttachmentPutModel,
-    CreateAutoTestRequest,
+    AutoTestPostModel,
+    AutoTestPutModel,
     LinkModel,
     LinkPutModel,
     TestRunV2GetModel,
-    UpdateAutoTestRequest,
-    UpdateEmptyRequest
+    TestRunV2PutModel
 )
 
 from .models.testrun import TestRun
@@ -34,7 +34,7 @@ class Converter:
 
     @staticmethod
     def test_result_to_create_autotest_request(result, external_id: str, project_id: str):
-        return CreateAutoTestRequest(
+        return AutoTestPostModel(
             external_id=external_id,
             project_id=project_id,
             name=result.get_name(),
@@ -44,7 +44,7 @@ class Converter:
 
     @staticmethod
     def test_result_to_update_autotest_request(result, external_id: str, project_id: str):
-        return UpdateAutoTestRequest(
+        return AutoTestPutModel(
             external_id=external_id,
             project_id=project_id,
             name=result.get_name(),
@@ -119,8 +119,8 @@ class Converter:
         )
 
     @staticmethod
-    def test_run_to_update_empty_request(test_run: TestRun) -> UpdateEmptyRequest:
-        return UpdateEmptyRequest(
+    def test_run_to_update_empty_request(test_run: TestRun) -> TestRunV2PutModel:
+        return TestRunV2PutModel(
             id=test_run.id,
             name=test_run.name,
             description=test_run.description,

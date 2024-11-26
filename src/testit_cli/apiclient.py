@@ -6,7 +6,7 @@ import typing
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi
-from testit_api_client.models import AttachmentPutModel, CreateEmptyRequest
+from testit_api_client.models import AttachmentPutModel, TestRunV2PostShortModel
 
 from .converter import Converter
 from .models.testrun import TestRun
@@ -31,10 +31,10 @@ class ApiClient:
 
     def create_test_run(self, project_id: str, name: str) -> TestRun:
         """Function creates test run and returns test run id."""
-        model = CreateEmptyRequest(project_id=project_id, name=name)
+        model = TestRunV2PostShortModel(project_id=project_id, name=name)
         logging.debug(f"Creating test run with model: {model}")
 
-        test_run = self.__test_run_api.create_empty(create_empty_request=model)
+        test_run = self.__test_run_api.create_empty(test_run_v2_post_short_model=model)
 
         logging.info(f'Created new testrun (ID: {test_run["id"]})')
         logging.debug(f"Test run created: {test_run}")
@@ -46,7 +46,7 @@ class ApiClient:
         model = Converter.test_run_to_update_empty_request(test_run)
         logging.debug(f"Updating test run with model: {model}")
 
-        response = self.__test_run_api.update_empty(update_empty_request=model)
+        response = self.__test_run_api.update_empty(test_run_v2_put_model=model)
 
         logging.info(f'Updated testrun (ID: {test_run.id})')
         logging.debug(f"Test run updated: {response}")
@@ -86,7 +86,7 @@ class ApiClient:
         """Function creates autotest and returns autotest id."""
         logging.debug(f"Creating autotest {model}")
 
-        response = self.__autotest_api.create_auto_test(create_auto_test_request=model)
+        response = self.__autotest_api.create_auto_test(auto_test_post_model=model)
 
         logging.debug(f"Created autotest {response}")
 
@@ -97,7 +97,7 @@ class ApiClient:
         try:
             logging.debug(f"Updating autotest {model}")
 
-            self.__autotest_api.update_auto_test(update_auto_test_request=model)
+            self.__autotest_api.update_auto_test(auto_test_put_model=model)
 
             logging.debug(f'Updated "{model.name}" successfully!')
         except Exception as exc:
