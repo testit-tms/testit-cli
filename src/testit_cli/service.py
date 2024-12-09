@@ -1,5 +1,6 @@
 import logging
 
+from .autotests_filter import AutotestsFilter
 from .models.config import Config
 from .models.testrun import TestRun
 from .parser import Parser
@@ -16,11 +17,13 @@ class Service:
         api_client: ApiClient,
         parser: Parser,
         importer: Importer,
+        autotests_filter: AutotestsFilter
     ):
         self.__config = config
         self.__api_client = api_client
         self.__parser = parser
         self.__importer = importer
+        self.__autotests_filter = autotests_filter
 
     def import_results(self):
         self.__upload_results()
@@ -33,10 +36,7 @@ class Service:
         test_run = self.__create_test_run()
         self.__update_test_run_with_attachments(test_run)
 
-        DirWorker.create_dir(self.__config.output)
-
-        with open(self.__config.output, "w") as text_file:
-            text_file.write(test_run.id)
+        self.__write_to_output(test_run.id)
 
     def finished_test_run(self):
         test_run = self.__api_client.get_test_run(self.__config.testrun_id)
@@ -85,3 +85,14 @@ class Service:
     def __update_test_run_with_attachments(self, test_run: TestRun):
         test_run.attachments.extend(self.__upload_attachments())
         self.__api_client.update_test_run(test_run)
+
+    def __write_to_output(self, content: str):
+        DirWorker.create_dir(self.__config.output)
+
+        with open(self.__config.output, "w") as text_file:
+            text_file.write(content)
+
+    def create_filter_for_test_framework(self):
+        autotests_filter = self.__autotests_filter.create_filter()
+
+        self.__write_to_output(autotests_filter)

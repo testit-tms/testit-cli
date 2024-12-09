@@ -75,7 +75,7 @@ class ExtraArgsForOption(click.Option):
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments, disable_cert_validation):
     """Uploading results from different streams"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation)
+    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "")
     service = ServiceFactory().get(config)
 
     service.upload_results()
@@ -100,7 +100,7 @@ def import_results(url, token, project_id, configuration_id, testrun_id, testrun
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
 
-    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation)
+    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "")
     service = ServiceFactory().get(config)
 
     service.import_results()
@@ -123,7 +123,7 @@ def testrun():
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def create_test_run(url, token, project_id, testrun_name, output, debug, attachments, disable_cert_validation):
     """Creating a new test run"""
-    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", [], debug, output, list(chain.from_iterable(attachments)), disable_cert_validation)
+    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", [], debug, output, list(chain.from_iterable(attachments)), disable_cert_validation, "")
     service = ServiceFactory().get(config)
 
     service.create_test_run()
@@ -138,7 +138,7 @@ def create_test_run(url, token, project_id, testrun_name, output, debug, attachm
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Completing the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation)
+    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "")
     service = ServiceFactory().get(config)
 
     service.finished_test_run()
@@ -153,7 +153,31 @@ def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_v
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def upload_attachments_for_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Uploading attachments for the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation)
+    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "")
     service = ServiceFactory().get(config)
 
     service.upload_attachments_for_test_run()
+
+
+PYTHON_FRAMEWORKS = ['pytest', 'robotframework', 'behave', 'nose']
+JAVA_FRAMEWORKS = ['gradle-testng', 'gradle-junit5', 'gradle-junit4', 'gradle-jbehave', 'gradle-cucumber', 'maven-testng', 'maven-junit5', 'maven-junit4', 'maven-jbehave', 'maven-cucumber']
+JAVASCRIPT_FRAMEWORKS = ['cucumberjs', 'codeceptjs', 'jest', 'mocha', 'playwright', 'testcafe']
+DOTNET_FRAMEWORKS = ['mstest', 'nunit', 'xunit', 'specflow']
+GOLANG_FRAMEWORKS = ['golang']
+
+
+@execute.command("autotests_filter")
+@click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
+@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
+@click.option("-ci", "--configuration-id", type=str, envvar='TMS_CONFIGURATION_ID', required=True, help="Set configuration id (15dbb164-c1aa-4cbf-830c-8c01ae14f4fb)", callback=validate_uuid)
+@click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', required=True, help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", callback=validate_uuid)
+@click.option("-f", "--framework", type=click.Choice(PYTHON_FRAMEWORKS + JAVA_FRAMEWORKS + JAVASCRIPT_FRAMEWORKS + DOTNET_FRAMEWORKS + GOLANG_FRAMEWORKS), required=True, help="Set test framework")
+@click.option("-d", "--debug", is_flag=True, help="Set debug logs")
+@click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def create_filter_for_framework(url, token, configuration_id, testrun_id, framework, debug, output, disable_cert_validation):
+    """Creating filter by autotests for test frameworks"""
+    config = Config(url, token, "", configuration_id, testrun_id, "", "", "", "", [], debug, output, [], disable_cert_validation, framework)
+    service = ServiceFactory().get(config)
+
+    service.create_filter_for_test_framework()
