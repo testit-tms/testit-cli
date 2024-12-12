@@ -14,12 +14,12 @@ class FilterFactory:
             'gradle-testng': cls.__initialize_gradle_testng_junit4_junit5_filter,
             'gradle-junit4': cls.__initialize_gradle_testng_junit4_junit5_filter,
             'gradle-junit5': cls.__initialize_gradle_testng_junit4_junit5_filter,
-            'gradle-jbehave': cls.__initialize_jbehave_filter,
+            # 'gradle-jbehave': cls.__initialize_jbehave_filter,
             'gradle-cucumber': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
             'maven-testng': cls.__initialize_maven_testng_junit4_junit5_filter,
             'maven-junit4': cls.__initialize_maven_testng_junit4_junit5_filter,
             'maven-junit5': cls.__initialize_maven_testng_junit4_junit5_filter,
-            'maven-jbehave': cls.__initialize_jbehave_filter,
+            # 'maven-jbehave': cls.__initialize_jbehave_filter,
             'maven-cucumber': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
             'cucumberjs': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
             'codeceptjs': cls.__initialize_codeceptjs_mocha_playwright_filter,
@@ -70,10 +70,10 @@ class FilterFactory:
 
         return ' '.join(autotest_keys)
 
-    @classmethod
-    def __initialize_jbehave_filter(cls, external_keys: typing.List[str]):
-        """Initialize filter for JBehave run"""
-        return '+' + ' '.join(external_keys)
+    # @classmethod
+    # def __initialize_jbehave_filter(cls, external_keys: typing.List[str]):
+    #     """Initialize filter for JBehave run"""
+    #     return '+' + ' '.join(external_keys)
 
     @staticmethod
     def __initialize_maven_testng_junit4_junit5_filter(external_keys: typing.List[str]):

@@ -11,7 +11,7 @@ def runner():
 
 
 def test_run_without_command(runner):
-    message = "Options:\n  --help  Show this message and exit.\n\nCommands:\n  results  Uploading the test results\n  testrun  Working with the test run\n"
+    message = "Options:\n  --help  Show this message and exit.\n\nCommands:\n  autotests_filter  Creating filter by autotests for test frameworks\n  results           Uploading the test results\n  testrun           Working with the test run\n"
     result = runner.invoke(execute, [])
 
     assert message in result.output
