@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from testit_api_client.model.available_test_result_outcome import AvailableTestResultOutcome
+from testit_api_client.models import AvailableTestResultOutcome
 
 from .status import Status
 

@@ -1,10 +1,10 @@
 import typing
 
 from testit_api_client.models import (
-    AutotestsSelectModelFilter,
-    AutotestsSelectModelIncludes,
+    AutotestFilterModel,
+    SearchAutoTestsQueryIncludesModel,
     AutoTestResultsForTestRunModel,
-    ApiV2AutoTestsSearchPostRequest,
+    AutotestsSelectModel,
     AttachmentModel,
     AttachmentPutModel,
     AutoTestPostModel,
@@ -12,7 +12,11 @@ from testit_api_client.models import (
     LinkModel,
     LinkPutModel,
     TestRunV2GetModel,
-    TestRunV2PutModel
+    TestRunV2PutModel,
+    TestResultsFilterRequest,
+    TestResultOutcome,
+    TestResultShortResponse,
+    AutoTestModel
 )
 
 from .models.testrun import TestRun
@@ -21,16 +25,59 @@ from .models.testrun import TestRun
 class Converter:
     @staticmethod
     def project_id_and_external_id_to_autotests_search_post_request(project_id: str, external_id: str):
-        autotests_filter = AutotestsSelectModelFilter(
+        autotests_filter = AutotestFilterModel(
             project_ids=[project_id],
             external_ids=[external_id],
             is_deleted=False)
-        autotests_includes = AutotestsSelectModelIncludes(
+        autotests_includes = SearchAutoTestsQueryIncludesModel(
             include_steps=False,
             include_links=False,
             include_labels=False)
 
-        return ApiV2AutoTestsSearchPostRequest(filter=autotests_filter, includes=autotests_includes)
+        return AutotestsSelectModel(filter=autotests_filter, includes=autotests_includes)
+
+    @staticmethod
+    def autotest_ids_to_autotests_search_post_request(autotest_ids: typing.List[int]):
+        autotests_filter = AutotestFilterModel(
+            global_ids=autotest_ids)
+        autotests_includes = SearchAutoTestsQueryIncludesModel(
+            include_steps=False,
+            include_links=False,
+            include_labels=False)
+
+        return AutotestsSelectModel(filter=autotests_filter, includes=autotests_includes)
+
+    @staticmethod
+    def testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
+            testrun_id: str,
+            configuration_id: str):
+        return TestResultsFilterRequest(
+            test_run_ids=[testrun_id],
+            configuration_ids=[configuration_id],
+            outcomes=[TestResultOutcome("InProgress")])
+
+    @staticmethod
+    def test_result_short_get_models_to_autotest_ids(test_results: typing.List[TestResultShortResponse]):
+        autotest_ids = []
+
+        for test_result in test_results:
+            autotest_ids.append(test_result.autotest_global_id)
+
+        return autotest_ids
+
+    @staticmethod
+    def autotest_models_to_external_keys(autotests: typing.List[AutoTestModel]):
+        external_keys = []
+
+        for autotest in autotests:
+            external_key = autotest.external_key
+
+            if external_key is None:
+                continue
+
+            external_keys.append(external_key)
+
+        return external_keys
 
     @staticmethod
     def test_result_to_create_autotest_request(result, external_id: str, project_id: str):
@@ -58,9 +105,9 @@ class Converter:
         result, external_id: str, configuration_id: str
     ):
         return AutoTestResultsForTestRunModel(
-            configuration_id,
-            external_id,
-            result.get_status(),
+            configuration_id=configuration_id,
+            auto_test_external_id=external_id,
+            outcome=result.get_status(),
             traces=result.get_trace(),
             duration=round(result.get_duration()),
             message=result.get_message(),
