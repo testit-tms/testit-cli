@@ -116,14 +116,14 @@ class Converter:
     @classmethod
     def test_run_v2_get_model_to_test_run(cls, test_run_model: TestRunV2GetModel) -> TestRun:
         return TestRun(
-            id=test_run_model["id"],
-            project_id=test_run_model["project_id"],
-            state=test_run_model["state_name"].value,
-            name=test_run_model["name"],
-            description=test_run_model["description"],
-            launch_source=test_run_model["launch_source"],
-            attachments=cls.attachment_models_to_attachment_put_models(test_run_model["attachments"]),
-            links=cls.link_models_to_link_put_models(test_run_model["links"])
+            id=test_run_model.id,
+            project_id=test_run_model.project_id,
+            state=test_run_model.state_name.value,
+            name=test_run_model.name,
+            description=test_run_model.description,
+            launch_source=test_run_model.launch_source,
+            attachments=cls.attachment_models_to_attachment_put_models(test_run_model.attachments),
+            links=cls.link_models_to_link_put_models(test_run_model.links)
         )
 
     @classmethod

@@ -37,7 +37,7 @@ class ApiClient:
 
         test_run = self.__test_run_api.create_empty(test_run_v2_post_short_model=model)
 
-        logging.info(f'Created new testrun (ID: {test_run["id"]})')
+        logging.info(f'Created new testrun (ID: {test_run.id})')
         logging.debug(f"Test run created: {test_run}")
 
         return Converter.test_run_v2_get_model_to_test_run(test_run)
@@ -90,7 +90,7 @@ class ApiClient:
 
         logging.debug(f"Created autotest {response}")
 
-        return response["id"]
+        return response.id
 
     def update_autotest(self, model: Converter.test_result_to_update_autotest_request):
         """Function updates autotest"""
