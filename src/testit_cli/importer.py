@@ -34,7 +34,7 @@ class Importer:
                     )
                 )
             else:
-                result.set_is_flaky(autotests[0]['is_flaky'])
+                result.set_is_flaky(autotests[0].is_flaky)
 
                 self.__api_client.update_autotest(
                     Converter.test_result_to_update_autotest_request(
