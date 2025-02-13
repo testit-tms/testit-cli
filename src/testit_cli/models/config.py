@@ -18,3 +18,4 @@ class Config:
     paths_to_attachments: list
     disable_cert_validation: bool
     framework: str
+    ignore_flaky_failure: bool

@@ -8,12 +8,13 @@ from .file_worker import FileWorker
 
 
 class Parser:
+    __FLAKY_FAILURE_NODE_NAME = "flakyFailure"
     __FAILURE_NODE_NAMES = [
         "error",
         "failure",
         "rerunFailure",
         "rerunError",
-        "flakyFailure",
+        __FLAKY_FAILURE_NODE_NAME,
         "flakyError",
         "system-err"]
     __MESSAGE_ATTRIBUTE_NAME = "message"
@@ -27,6 +28,7 @@ class Parser:
         self.__separator = config.separator
         self.__namespace = config.namespace
         self.__classname = config.classname
+        self.__ignore_flaky_failure = config.ignore_flaky_failure
 
     def read_file(self):  # noqa: C901
         results = []
@@ -68,7 +70,8 @@ class Parser:
                             testcase.set_status(Status.SKIPPED)
 
                             continue
-                        elif child.nodeName in self.__FAILURE_NODE_NAMES:
+                        elif child.nodeName in self.__FAILURE_NODE_NAMES and \
+                                not (child.nodeName == self.__FLAKY_FAILURE_NODE_NAME and self.__ignore_flaky_failure):
                             testcase.set_status(Status.FAILED)
 
                         testcase.set_trace(
