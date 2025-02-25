@@ -18,4 +18,4 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 5.0     | 2.0           |
 | 5.2     | 2.1           |
 | 5.2.2   | 2.2.1.post522 |
-| 5.2.3   | 2.3.0.post522 |
+| 5.2.3   | 2.3.0.post523 |
