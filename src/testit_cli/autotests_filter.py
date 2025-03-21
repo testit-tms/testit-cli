@@ -13,9 +13,10 @@ class AutotestsFilter:
 
     def create_filter(self):
         """Function returns str of filter by autotests for test Framework run command."""
-        test_results_search_post_model = Converter.testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
+        test_results_search_post_model = (
+            Converter.testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
             self.__config.testrun_id,
-            self.__config.configuration_id)
+            self.__config.configuration_id))
         test_results = self.__api_client.get_test_results(test_results_search_post_model)
         autotest_ids = Converter.test_result_short_get_models_to_autotest_ids(test_results)
         autotests_search_post_model = Converter.autotest_ids_to_autotests_search_post_request(autotest_ids)
