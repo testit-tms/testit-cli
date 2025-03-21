@@ -3,10 +3,11 @@ import logging
 import os
 import typing
 
-from testit_api_client import ApiClient as TmsClient
+from testit_api_client import ApiClient as TmsClient, CreateEmptyTestRunApiModel, AutoTestApiResult, \
+    AutoTestSearchApiModel, AssignAttachmentApiModel
 from testit_api_client import Configuration
 from testit_api_client.api import AttachmentsApi, AutoTestsApi, TestRunsApi, TestResultsApi
-from testit_api_client.models import AttachmentPutModel, TestRunV2PostShortModel, TestResultShortResponse
+from testit_api_client.models import AttachmentPutModel, TestResultShortResponse
 
 from .converter import Converter
 from .models.testrun import TestRun
@@ -32,10 +33,10 @@ class ApiClient:
 
     def create_test_run(self, project_id: str, name: str) -> TestRun:
         """Function creates test run and returns test run id."""
-        model = TestRunV2PostShortModel(project_id=project_id, name=name)
+        model = CreateEmptyTestRunApiModel(project_id=project_id, name=name)
         logging.debug(f"Creating test run with model: {model}")
 
-        test_run = self.__test_run_api.create_empty(test_run_v2_post_short_model=model)
+        test_run = self.__test_run_api.create_empty(model)
 
         logging.info(f'Created new testrun (ID: {test_run.id})')
         logging.debug(f"Test run created: {test_run}")
@@ -47,7 +48,7 @@ class ApiClient:
         model = Converter.test_run_to_update_empty_request(test_run)
         logging.debug(f"Updating test run with model: {model}")
 
-        self.__test_run_api.update_empty(test_run_v2_put_model=model)
+        self.__test_run_api.update_empty(model)
 
         logging.info(f'Updated testrun (ID: {test_run.id})')
 
@@ -72,11 +73,12 @@ class ApiClient:
 
         logging.error(f"Test run {test_run_id} not found!")
 
-    def get_autotests(self, model: Converter.project_id_and_external_id_to_autotests_search_post_request):
-        """Function returns list of AutoTestModel."""
+    def get_autotests(self, model: AutoTestSearchApiModel) \
+            -> list[AutoTestApiResult]:
+        """Function returns list of AutoTestApiResult."""
         logging.debug(f"Getting autotests: {model}")
 
-        autotests = self.__autotest_api.api_v2_auto_tests_search_post(autotests_select_model=model)
+        autotests = self.__autotest_api.api_v2_auto_tests_search_post(auto_test_search_api_model=model)
 
         logging.debug(f"Got autotests: {autotests}")
 
@@ -119,7 +121,7 @@ class ApiClient:
         except Exception as exc:
             logging.error(f"Set result status: {exc}")
 
-    def upload_attachments(self, attachments: typing.List[str]) -> typing.List[AttachmentPutModel]:
+    def upload_attachments(self, attachments: typing.List[str]) -> typing.List[AssignAttachmentApiModel]:
         """Function upload attachments and returns list of AttachmentPutModel."""
         attachment_ids = []
 
@@ -130,7 +132,7 @@ class ApiClient:
                         attachment_response = self.__attachments_api.api_v2_attachments_post(
                             file=(file.name, file.read()))
 
-                        attachment_ids.append(AttachmentPutModel(id=attachment_response.id))
+                        attachment_ids.append(AssignAttachmentApiModel(id=attachment_response.id))
 
                         logging.debug(f'Attachment "{attachment}" was uploaded')
                     except Exception as exc:
