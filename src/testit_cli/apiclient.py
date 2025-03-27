@@ -7,7 +7,7 @@ from testit_api_client import ApiClient as TmsClient, CreateEmptyTestRunApiModel
     AutoTestSearchApiModel, AssignAttachmentApiModel
 from testit_api_client import Configuration
 from testit_api_client.api import AttachmentsApi, AutoTestsApi, TestRunsApi, TestResultsApi
-from testit_api_client.models import AttachmentPutModel, TestResultShortResponse
+from testit_api_client.models import TestResultShortResponse
 
 from .converter import Converter
 from .models.testrun import TestRun
