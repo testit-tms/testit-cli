@@ -1,7 +1,8 @@
 import typing
 
 from testit_api_client import UpdateEmptyTestRunApiModel, TestRunV2ApiResult, LinkApiResult, AttachmentApiResult, \
-    AutoTestApiResult, AutoTestSearchApiModel, AutoTestFilterApiModel, AutoTestSearchIncludeApiModel
+    AutoTestApiResult, AutoTestSearchApiModel, AutoTestFilterApiModel, AutoTestSearchIncludeApiModel, \
+    TestResultsFilterApiModel
 from testit_api_client.models import (
     AutoTestResultsForTestRunModel,
     AttachmentPutModel,
@@ -45,8 +46,8 @@ class Converter:
     @staticmethod
     def testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
             testrun_id: str,
-            configuration_id: str) -> TestResultShortResponse:
-        return TestResultShortResponse(
+            configuration_id: str) -> TestResultsFilterApiModel:
+        return TestResultsFilterApiModel(
             test_run_ids=[testrun_id],
             configuration_ids=[configuration_id],
             outcomes=[TestResultOutcome("InProgress")])

@@ -150,7 +150,7 @@ class ApiClient:
         logging.debug(f"Getting test results: {model}")
 
         test_results = self.__test_results_api.api_v2_test_results_search_post(
-            test_results_filter_request=model)
+            test_results_filter_api_model=model)
 
         logging.debug(f"Got test results: {test_results}")
 
