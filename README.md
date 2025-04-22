@@ -19,5 +19,5 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 5.2     | 2.1           |
 | 5.2.2   | 2.2.1.post522 |
 | 5.2.3   | 2.3.0.post523 |
-| 5.3     | 2.4.3.post530 |
+| 5.3     | 2.4.4.post530 |
 | Cloud   | 2.4.4         |
