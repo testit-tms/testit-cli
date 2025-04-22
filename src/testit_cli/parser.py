@@ -68,10 +68,16 @@ class Parser:
 
                         if child.nodeName == "skipped":
                             testcase.set_status(Status.SKIPPED)
-
                             continue
+
+                        # if in failure node names and not flaky
                         elif child.nodeName in self.__FAILURE_NODE_NAMES and \
                                 not (child.nodeName == self.__FLAKY_FAILURE_NODE_NAME and self.__ignore_flaky_failure):
+
+                            # if empty tag like <system-err/> -> don't count it as error
+                            if len(child.childNodes) == 0 and len(child.attributes) == 0:
+                                continue
+
                             testcase.set_status(Status.FAILED)
 
                         testcase.set_trace(
