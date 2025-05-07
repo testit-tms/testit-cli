@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "2.4.5.post530"
+VERSION = "2.4.6.post530"
 
 setup(
     name='testit-cli',
