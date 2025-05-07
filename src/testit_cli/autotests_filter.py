@@ -1,4 +1,5 @@
 import hashlib
+import logging
 
 from .apiclient import ApiClient
 from .converter import Converter
@@ -15,9 +16,16 @@ class AutotestsFilter:
         """Function returns str of filter by autotests for test Framework run command."""
         test_results_search_post_model = (
             Converter.testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
-            self.__config.testrun_id,
-            self.__config.configuration_id))
+                self.__config.testrun_id,
+                self.__config.configuration_id))
         test_results = self.__api_client.get_test_results(test_results_search_post_model)
+
+        if len(test_results) == 0:
+            exception = f"Couldn't get the test results in progress by test run id \"{self.__config.testrun_id}\" " + \
+                f"and configuration id \"{self.__config.configuration_id}\""
+
+            raise Exception(exception)
+
         autotest_ids = Converter.test_result_short_get_models_to_autotest_ids(test_results)
         autotests_search_post_model = Converter.autotest_ids_to_autotests_search_post_request(autotest_ids)
         autotests = self.__api_client.get_autotests(autotests_search_post_model)
