@@ -97,12 +97,15 @@ def upload_results(url, token, configuration_id, testrun_id, separator, namespac
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
-def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
+def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug,
+                   attachments, disable_cert_validation, ignore_flaky_failure):
     """Uploading the first test results"""
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
 
-    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", ignore_flaky_failure)
+    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name,
+                    separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)),
+                    disable_cert_validation, "", ignore_flaky_failure)
     service = ServiceFactory().get(config)
 
     service.import_results()

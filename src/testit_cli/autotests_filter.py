@@ -1,5 +1,4 @@
 import hashlib
-import logging
 
 from .apiclient import ApiClient
 from .converter import Converter

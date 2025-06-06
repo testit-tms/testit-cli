@@ -89,7 +89,7 @@ class Service:
     def __write_to_output(self, content: str):
         DirWorker.create_dir(self.__config.output)
 
-        with open(self.__config.output, "w") as text_file:
+        with open(self.__config.output, "w", encoding="utf-8") as text_file:
             text_file.write(content)
 
     def create_filter_for_test_framework(self):
