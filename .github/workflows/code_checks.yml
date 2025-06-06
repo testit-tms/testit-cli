@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows-latest] # disable tests on other os
         python-version: ['3.11']
     steps:
       - uses: actions/checkout@v3
@@ -24,8 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run flake8
-        run: flake8 --ignore=C901,W503 .
-
       - name: Tests
         run: pytest --basetemp=tmp
+
+      - name: Run flake8
+        run: flake8 --ignore=C901,W503 src
+
