@@ -127,16 +127,15 @@ class ApiClient:
 
         for attachment in attachments:
             if os.path.isfile(attachment):
-                with open(attachment, "rb+") as file:
-                    try:
-                        attachment_response = self.__attachments_api.api_v2_attachments_post(
-                            file=(file.name, file.read()))
+                try:
+                    attachment_response = self.__attachments_api.api_v2_attachments_post(
+                        file=attachment)
 
-                        attachment_ids.append(AssignAttachmentApiModel(id=attachment_response.id))
+                    attachment_ids.append(AssignAttachmentApiModel(id=attachment_response.id))
 
-                        logging.debug(f'Attachment "{attachment}" was uploaded')
-                    except Exception as exc:
-                        logging.error(f'Upload attachment "{attachment}" status: {exc}')
+                    logging.debug(f'Attachment "{attachment}" was uploaded')
+                except Exception as exc:
+                    logging.error(f'Upload attachment "{attachment}" status: {exc}')
             else:
                 logging.error(f'File "{attachment}" was not found!')
 
