@@ -204,9 +204,9 @@ class HtmlEscapeUtils:
         }
 
         return (
-                obj_type in simple_types or
-                # Check for enums
-                (hasattr(obj_type, '__bases__') and any(
-                    base.__name__ == 'Enum' for base in obj_type.__bases__
-                ))
+            obj_type in simple_types or
+            # Check for enums
+            (hasattr(obj_type, '__bases__') and any(
+                base.__name__ == 'Enum' for base in obj_type.__bases__
+            ))
         )
