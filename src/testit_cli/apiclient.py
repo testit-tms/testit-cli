@@ -11,6 +11,7 @@ from testit_api_client.models import TestResultShortResponse
 
 from .converter import Converter
 from .models.testrun import TestRun
+from .html_escape_utils import HtmlEscapeUtils
 
 
 class ApiClient:
@@ -34,6 +35,7 @@ class ApiClient:
     def create_test_run(self, project_id: str, name: str) -> TestRun:
         """Function creates test run and returns test run id."""
         model = CreateEmptyTestRunApiModel(project_id=project_id, name=name)
+        model = HtmlEscapeUtils.escape_html_in_object(model)
         logging.debug(f"Creating test run with model: {model}")
 
         test_run = self.__test_run_api.create_empty(model)
@@ -46,6 +48,7 @@ class ApiClient:
     def update_test_run(self, test_run: TestRun):
         """Function updates test run."""
         model = Converter.test_run_to_update_empty_request(test_run)
+        model = HtmlEscapeUtils.escape_html_in_object(model)
         logging.debug(f"Updating test run with model: {model}")
 
         self.__test_run_api.update_empty(model)
@@ -86,6 +89,8 @@ class ApiClient:
 
     def create_autotest(self, model: Converter.test_result_to_create_autotest_request):
         """Function creates autotest and returns autotest id."""
+        model = HtmlEscapeUtils.escape_html_in_object(model)
+
         logging.debug(f"Creating autotest {model}")
 
         response = self.__autotest_api.create_auto_test(auto_test_post_model=model)
@@ -97,6 +102,8 @@ class ApiClient:
     def update_autotest(self, model: Converter.test_result_to_update_autotest_request):
         """Function updates autotest"""
         try:
+            model = HtmlEscapeUtils.escape_html_in_object(model)
+
             logging.debug(f"Updating autotest {model}")
 
             self.__autotest_api.update_auto_test(auto_test_put_model=model)
@@ -110,6 +117,8 @@ class ApiClient:
     ):
         """Function sends autotest result to test run"""
         try:
+            model = HtmlEscapeUtils.escape_html_in_object(model)
+
             logging.debug(f"Adding autotest results to testrun {testrun_id}: {model}")
 
             self.__test_run_api.set_auto_test_results_for_test_run(
