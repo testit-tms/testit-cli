@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "2.4.11.post540"
+VERSION = "2.4.11"
 
 setup(
     name='testit-cli',
@@ -26,7 +26,7 @@ setup(
     py_modules=['testit_cli'],
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
-    install_requires=['testit-api-client==6.3.1.post540', 'validators', 'tqdm', 'click~=8.0.4'],
+    install_requires=['testit-api-client==6.3.0', 'validators', 'tqdm', 'click~=8.0.4'],
     entry_points={
         'console_scripts': [
             'testit = testit_cli.__main__:console_main'
