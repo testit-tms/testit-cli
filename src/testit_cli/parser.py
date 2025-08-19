@@ -1,4 +1,5 @@
 import logging
+import typing
 from xml.dom import minidom
 
 from .models.config import Config
@@ -92,7 +93,7 @@ class Parser:
         return results
 
     @classmethod
-    def __form_trace(cls, child_nodes: list) -> str:
+    def __form_trace(cls, child_nodes: list[typing.Any]) -> str:
         trace = ""
 
         for child in child_nodes:
@@ -104,9 +105,9 @@ class Parser:
         return trace
 
     @classmethod
-    def __get_testcases(cls, xml) -> list:
+    def __get_testcases(cls, xml: typing.Any) -> list[typing.Any]:
         for tag in cls.__TAGS_OF_TESTS:
-            testcases = xml.getElementsByTagName(tag)
+            testcases: list[typing.Any] = xml.getElementsByTagName(tag)
 
             if testcases:
                 return testcases

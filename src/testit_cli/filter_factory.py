@@ -36,12 +36,12 @@ class FilterFactory:
         return initialization[config.framework](external_keys)
 
     @classmethod
-    def __initialize_pytest_filter(cls, external_keys: typing.List[str]):
+    def __initialize_pytest_filter(cls, external_keys: typing.List[str]) -> str:
         """Initialize filter for pytest run"""
         return '-k\n' + ' or '.join(external_keys)
 
     @staticmethod
-    def __initialize_robotframework_filter(external_keys: typing.List[str]):
+    def __initialize_robotframework_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for RobotFramework run"""
         robotframework_filter = ""
 
@@ -51,17 +51,17 @@ class FilterFactory:
         return robotframework_filter
 
     @staticmethod
-    def __initialize_behave_filter(external_keys: typing.List[str]):
+    def __initialize_behave_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for Behave run"""
         return '-n' + '|'.join(external_keys)
 
     @classmethod
-    def __initialize_nose_filter(cls, external_keys: typing.List[str]):
+    def __initialize_nose_filter(cls, external_keys: typing.List[str]) -> str:
         """Initialize filter for Nose run"""
         return ' '.join(external_keys)
 
     @staticmethod
-    def __initialize_gradle_testng_junit4_junit5_filter(external_keys: typing.List[str]):
+    def __initialize_gradle_testng_junit4_junit5_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for gradle TestNG or JUnit4 or JUnit5 run with gradle"""
         autotest_keys = []
 
@@ -76,7 +76,7 @@ class FilterFactory:
     #     return '+' + ' '.join(external_keys)
 
     @staticmethod
-    def __initialize_maven_testng_junit4_junit5_filter(external_keys: typing.List[str]):
+    def __initialize_maven_testng_junit4_junit5_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for TestNG or JUnit4 or JUnit5 run with maven"""
         autotest_keys = []
 
@@ -86,12 +86,12 @@ class FilterFactory:
         return ' '.join(autotest_keys)
 
     @classmethod
-    def __initialize_codeceptjs_mocha_playwright_filter(cls, external_keys: typing.List[str]):
+    def __initialize_codeceptjs_mocha_playwright_filter(cls, external_keys: typing.List[str]) -> str:
         """Initialize filter for CodeceptJS or Mocha or Playwright run"""
         return '|'.join(external_keys)
 
     @classmethod
-    def __initialize_cucumber_cucumberjs_jest_golang_filter(cls, external_keys: typing.List[str]):
+    def __initialize_cucumber_cucumberjs_jest_golang_filter(cls, external_keys: typing.List[str]) -> str:
         """Initialize filter for Cucumber or CucumberJS or Jest or Golang run"""
         autotest_keys = []
 
@@ -101,7 +101,7 @@ class FilterFactory:
         return '|'.join(autotest_keys)
 
     @staticmethod
-    def __initialize_mstest_nunit_xunit_filter(external_keys: typing.List[str]):
+    def __initialize_mstest_nunit_xunit_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for MSTest or NUnit or XUnit run"""
         autotest_keys = []
 
@@ -111,7 +111,7 @@ class FilterFactory:
         return '|'.join(autotest_keys)
 
     @staticmethod
-    def __initialize_specflow_filter(external_keys: typing.List[str]):
+    def __initialize_specflow_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for SpecFlow run"""
         autotest_keys = []
 

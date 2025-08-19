@@ -4,7 +4,7 @@ import os
 
 class FileWorker:
     @classmethod
-    def get_files(cls, path_to_files: str, files_type: str = None) -> list:
+    def get_files(cls, path_to_files: str, files_type: str = "") -> list[str]:
         if os.path.isdir(path_to_files):
             return glob.glob(cls.__get_pathname(path_to_files, files_type))
 
@@ -16,7 +16,7 @@ class FileWorker:
         return files
 
     @staticmethod
-    def __get_pathname(path_to_files: str, files_type: str):
+    def __get_pathname(path_to_files: str, files_type: str) -> str:
         if files_type:
             return f"{path_to_files}/*.{files_type}"
 

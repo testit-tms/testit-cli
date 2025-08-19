@@ -1,53 +1,61 @@
 import typing
 
-from testit_api_client import UpdateEmptyTestRunApiModel, TestRunV2ApiResult, LinkApiResult, AttachmentApiResult, \
-    AutoTestApiResult, AutoTestSearchApiModel, AutoTestFilterApiModel, AutoTestSearchIncludeApiModel, \
-    TestResultsFilterApiModel
+from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
+from testit_api_client.model.api_v2_test_results_search_post_request import ApiV2TestResultsSearchPostRequest
+from testit_api_client.model.attachment_api_result import AttachmentApiResult
+from testit_api_client.model.auto_test_api_result import AutoTestApiResult
+from testit_api_client.model.auto_test_search_api_model_filter import AutoTestSearchApiModelFilter
+from testit_api_client.model.auto_test_search_api_model_includes import AutoTestSearchApiModelIncludes
+from testit_api_client.model.create_auto_test_request import CreateAutoTestRequest
+from testit_api_client.model.link_api_result import LinkApiResult
+from testit_api_client.model.test_run_v2_api_result import TestRunV2ApiResult
+from testit_api_client.model.update_auto_test_request import UpdateAutoTestRequest
+from testit_api_client.model.update_empty_request import UpdateEmptyRequest
 from testit_api_client.models import (
     AutoTestResultsForTestRunModel,
     AttachmentPutModel,
-    AutoTestPostModel,
-    AutoTestPutModel,
     LinkPutModel,
     TestResultOutcome,
     TestResultShortResponse,
 )
+from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
 
+from .models.testcase import TestCase
 from .models.testrun import TestRun
 
 
 class Converter:
     @staticmethod
     def project_id_and_external_id_to_autotests_search_post_request(
-            project_id: str, external_id: str) -> AutoTestSearchApiModel:
-        autotests_filter = AutoTestFilterApiModel(
+            project_id: str, external_id: str) -> ApiV2AutoTestsSearchPostRequest:
+        autotests_filter = AutoTestSearchApiModelFilter(
             project_ids=[project_id],
             external_ids=[external_id],
             is_deleted=False)
-        autotests_includes = AutoTestSearchIncludeApiModel(
+        autotests_includes = AutoTestSearchApiModelIncludes(
             include_steps=False,
             include_links=False,
             include_labels=False)
 
-        return AutoTestSearchApiModel(filter=autotests_filter, includes=autotests_includes)
+        return ApiV2AutoTestsSearchPostRequest(filter=autotests_filter, includes=autotests_includes)
 
     @staticmethod
     def autotest_ids_to_autotests_search_post_request(
-            autotest_ids: typing.List[int]) -> AutoTestSearchApiModel:
-        autotests_filter = AutoTestFilterApiModel(
+            autotest_ids: typing.List[int]) -> ApiV2AutoTestsSearchPostRequest:
+        autotests_filter = AutoTestSearchApiModelFilter(
             global_ids=autotest_ids)
-        autotests_includes = AutoTestSearchIncludeApiModel(
+        autotests_includes = AutoTestSearchApiModelIncludes(
             include_steps=False,
             include_links=False,
             include_labels=False)
 
-        return AutoTestSearchApiModel(filter=autotests_filter, includes=autotests_includes)
+        return ApiV2AutoTestsSearchPostRequest(filter=autotests_filter, includes=autotests_includes)
 
     @staticmethod
     def testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
             testrun_id: str,
-            configuration_id: str) -> TestResultsFilterApiModel:
-        return TestResultsFilterApiModel(
+            configuration_id: str) -> ApiV2TestResultsSearchPostRequest:
+        return ApiV2TestResultsSearchPostRequest(
             test_run_ids=[testrun_id],
             configuration_ids=[configuration_id],
             outcomes=[TestResultOutcome("InProgress")])
@@ -79,8 +87,8 @@ class Converter:
 
     @staticmethod
     def test_result_to_create_autotest_request(
-            result, external_id: str, project_id: str) -> AutoTestPostModel:
-        return AutoTestPostModel(
+            result: TestCase, external_id: str, project_id: str) -> CreateAutoTestRequest:
+        return CreateAutoTestRequest(
             external_id=external_id,
             project_id=project_id,
             name=result.get_name(),
@@ -90,8 +98,8 @@ class Converter:
 
     @staticmethod
     def test_result_to_update_autotest_request(
-            result, external_id: str, project_id: str) -> AutoTestPutModel:
-        return AutoTestPutModel(
+            result: TestCase, external_id: str, project_id: str) -> UpdateAutoTestRequest:
+        return UpdateAutoTestRequest(
             external_id=external_id,
             project_id=project_id,
             name=result.get_name(),
@@ -102,7 +110,7 @@ class Converter:
 
     @staticmethod
     def test_result_to_testrun_result_post_model(
-        result, external_id: str, configuration_id: str
+        result: TestCase, external_id: str, configuration_id: str
     ) -> AutoTestResultsForTestRunModel:
         return AutoTestResultsForTestRunModel(
             configuration_id=configuration_id,
@@ -129,7 +137,7 @@ class Converter:
     @classmethod
     def attachment_models_to_attachment_put_models(
             cls,
-            attachment_models: typing.List[AttachmentApiResult]) -> typing.List[AttachmentPutModel]:
+            attachment_models: typing.List[AttachmentApiResult]) -> typing.List[AssignAttachmentApiModel]:
         attachment_put_models = []
 
         for attachment_model in attachment_models:
@@ -139,8 +147,17 @@ class Converter:
         return attachment_put_models
 
     @staticmethod
-    def attachment_model_to_attachment_put_model(attachment_model: AttachmentApiResult) -> AttachmentPutModel:
-        return AttachmentPutModel(id=attachment_model.id)
+    def attachment_model_to_attachment_put_model(attachment_model: AttachmentApiResult) -> AssignAttachmentApiModel:
+        return AssignAttachmentApiModel(id=attachment_model.id)
+
+    @staticmethod
+    def attachment_put_model_to_assign_attachment(attachment_model: AttachmentPutModel) -> AssignAttachmentApiModel:
+        return AssignAttachmentApiModel(id=attachment_model.id)
+
+    @staticmethod
+    def attachment_put_models_to_assign_attachments(attachment_models: list[AttachmentPutModel])\
+            -> list[AssignAttachmentApiModel]:
+        return list(map(lambda x: Converter.attachment_put_model_to_assign_attachment(x), attachment_models))
 
     @classmethod
     def link_models_to_link_put_models(
@@ -166,10 +183,13 @@ class Converter:
         )
 
     @staticmethod
-    def test_run_to_update_empty_request(test_run: TestRun) -> UpdateEmptyTestRunApiModel:
-        return UpdateEmptyTestRunApiModel(
+    def test_run_to_update_empty_request(test_run: TestRun) -> UpdateEmptyRequest:
+        return UpdateEmptyRequest(
+            # str
             id=test_run.id,
+            # str
             name=test_run.name,
+            # str
             description=test_run.description,
             launch_source=test_run.launch_source,
             attachments=test_run.attachments,
