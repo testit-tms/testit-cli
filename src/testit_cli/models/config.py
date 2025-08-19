@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import typing
 
 
 @dataclass
@@ -12,10 +13,10 @@ class Config:
     separator: str
     namespace: str
     classname: str
-    results: list
+    results: list[typing.Any]
     is_debug: bool
     output: str
-    paths_to_attachments: list
+    paths_to_attachments: list[typing.Any]
     disable_cert_validation: bool
     framework: str
     ignore_flaky_failure: bool

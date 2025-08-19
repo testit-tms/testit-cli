@@ -5,7 +5,7 @@ class Logger:
     """Class representing a logger factory"""
 
     @staticmethod
-    def register_logger(is_debug: bool):
+    def register_logger(is_debug: bool) -> None:
         """Function registers loggers."""
 
         logging.basicConfig(

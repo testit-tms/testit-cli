@@ -19,7 +19,7 @@ class DirWorker:
         return os.path.exists(path_to_dir) and os.path.isdir(path_to_dir)
 
     @staticmethod
-    def __split_path_to_dir_names(path_to_dir: str) -> tuple:
+    def __split_path_to_dir_names(path_to_dir: str) -> tuple[str, ...]:
         return PurePath(path_to_dir).parts[:-1]
 
     @staticmethod
