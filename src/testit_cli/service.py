@@ -1,6 +1,10 @@
 import logging
 
+from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
+from testit_api_client.model.attachment_put_model import AttachmentPutModel
+
 from .autotests_filter import AutotestsFilter
+from .converter import Converter
 from .models.config import Config
 from .models.testrun import TestRun
 from .parser import Parser
@@ -54,7 +58,7 @@ class Service:
             self.__config.testrun_name
         )
 
-    def __upload_attachments(self) -> list:
+    def __upload_attachments(self) -> list[AttachmentPutModel]:
         files = []
 
         for path_to_attachments in self.__config.paths_to_attachments:
@@ -82,11 +86,13 @@ class Service:
 
         logging.info("Successfully sent test results")
 
-    def __update_test_run_with_attachments(self, test_run: TestRun):
-        test_run.attachments.extend(self.__upload_attachments())
+    def __update_test_run_with_attachments(self, test_run: TestRun) -> None:
+        attachments: list[AssignAttachmentApiModel] = Converter.attachment_put_models_to_assign_attachments(
+            self.__upload_attachments())
+        test_run.attachments.extend(attachments)
         self.__api_client.update_test_run(test_run)
 
-    def __write_to_output(self, content: str):
+    def __write_to_output(self, content: str) -> None:
         DirWorker.create_dir(self.__config.output)
 
         with open(self.__config.output, "w", encoding="utf-8") as text_file:

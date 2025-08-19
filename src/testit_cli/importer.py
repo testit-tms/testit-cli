@@ -1,5 +1,7 @@
 import hashlib
 
+from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
+from testit_api_client.model.auto_test_api_result import AutoTestApiResult
 from tqdm import tqdm
 
 from .apiclient import ApiClient
@@ -13,7 +15,7 @@ class Importer:
         self.__api_client = api_client
         self.__config = config
 
-    def send_results(self, results: [TestCase]):
+    def send_results(self, results: list[TestCase]) -> None:
         for result in tqdm(results, desc="Uploading"):
             external_id = self.__get_external_id(
                 result.get_name_space()
@@ -21,11 +23,10 @@ class Importer:
                 + result.get_name()
             )
 
-            autotests = self.__api_client.get_autotests(
-                Converter.project_id_and_external_id_to_autotests_search_post_request(
-                    self.__config.project_id, external_id
-                )
-            )
+            request: ApiV2AutoTestsSearchPostRequest = (Converter
+                                                        .project_id_and_external_id_to_autotests_search_post_request
+                                                        (self.__config.project_id, external_id))
+            autotests: list[AutoTestApiResult] = self.__api_client.get_autotests(request)
 
             if not autotests:
                 self.__api_client.create_autotest(
@@ -50,5 +51,5 @@ class Importer:
             )
 
     @staticmethod
-    def __get_external_id(value: str):
+    def __get_external_id(value: str) -> str:
         return hashlib.md5(value.encode("utf-8")).hexdigest()
