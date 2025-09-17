@@ -21,4 +21,4 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 5.2.3   | 2.3.0.post523  |
 | 5.3     | 2.4.5.post530  |
 | 5.4     | 2.4.11.post540 |
-| Cloud   | 2.6.0          |
+| Cloud   | 2.7.0          |

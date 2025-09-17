@@ -31,6 +31,7 @@ class FilterFactory:
             'xunit': cls.__initialize_mstest_nunit_xunit_filter,
             'specflow': cls.__initialize_specflow_filter,
             'golang': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
+            'xctest': cls.__initialize_xctest_filter
         }
 
         return initialization[config.framework](external_keys)
@@ -119,3 +120,8 @@ class FilterFactory:
             autotest_keys.append('FullyQualifiedName~' + external_key)
 
         return '|'.join(autotest_keys)
+
+    @staticmethod
+    def __initialize_xctest_filter(external_keys: typing.List[str]) -> str:
+        """Initialize filter for XCTest run"""
+        return ';'.join(external_keys)
