@@ -7,6 +7,7 @@ lib/
 bin/
 include/
 .Python/
+*.local
 
 # These lines are suggested according to the svn:ignore property
 # Feel free to enable them by uncommenting them
