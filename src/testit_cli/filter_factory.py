@@ -1,4 +1,5 @@
 import typing
+import re
 
 from .models.config import Config
 
@@ -89,7 +90,12 @@ class FilterFactory:
     @classmethod
     def __initialize_codeceptjs_mocha_playwright_filter(cls, external_keys: typing.List[str]) -> str:
         """Initialize filter for CodeceptJS or Mocha or Playwright run"""
-        return '|'.join(external_keys)
+        autotest_keys = []
+
+        for external_key in external_keys:
+            autotest_keys.append(re.escape(external_key))
+
+        return '|'.join(autotest_keys)
 
     @classmethod
     def __initialize_cucumber_cucumberjs_jest_golang_filter(cls, external_keys: typing.List[str]) -> str:
@@ -97,7 +103,7 @@ class FilterFactory:
         autotest_keys = []
 
         for external_key in external_keys:
-            autotest_keys.append('^' + external_key + '$')
+            autotest_keys.append('^' + re.escape(external_key) + '$')
 
         return '|'.join(autotest_keys)
 
