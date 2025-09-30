@@ -171,6 +171,7 @@ DOTNET_FRAMEWORKS = ['mstest', 'nunit', 'xunit', 'specflow']
 GOLANG_FRAMEWORKS = ['golang']
 SWIFT_FRAMEWORKS = ['xctest']
 
+
 @execute.command("autotests_filter")
 @click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
 @click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")

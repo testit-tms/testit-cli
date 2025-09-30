@@ -28,5 +28,5 @@ jobs:
         run: pytest --basetemp=tmp
 
       - name: Run flake8
-        run: flake8 --ignore=C901,W503 src
+        run: flake8 --ignore=C901,W503,W504 src
 
