@@ -182,9 +182,10 @@ SWIFT_FRAMEWORKS = ['xctest']
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
-def create_filter_for_framework(url, token, configuration_id, testrun_id, framework, debug, output, disable_cert_validation):
+@click.option("-in_p", "--in-progress", is_flag=True, help="Set filter for in_progress testrun only")
+def create_filter_for_framework(url, token, configuration_id, testrun_id, framework, debug, output, disable_cert_validation, in_progress):
     """Creating filter by autotests for test frameworks"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", "", "", "", [], debug, output, [], disable_cert_validation, framework, False)
+    config = Config(url, token, "", configuration_id, testrun_id, "", "", "", "", [], debug, output, [], disable_cert_validation, framework, False, in_progress)
     service = ServiceFactory().get(config)
 
     service.create_filter_for_test_framework()

@@ -99,6 +99,6 @@ class Service:
             text_file.write(content)
 
     def create_filter_for_test_framework(self):
-        autotests_filter = self.__autotests_filter.create_filter()
+        autotests_filter = self.__autotests_filter.create_filter(self.__config.in_progress_only)
 
         self.__write_to_output(autotests_filter)

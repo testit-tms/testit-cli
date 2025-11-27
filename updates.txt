@@ -1,0 +1,7 @@
+27.11.2025:
+
+new parameter for filtering:
+"-in_p", "--in-progress", is_flag=True, help="Set filter for in_progress testrun only"
+example:
+autotests_filter -f kotest -in_p ... -o kotest_filter.txt
+

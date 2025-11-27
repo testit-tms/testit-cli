@@ -52,6 +52,14 @@ class Converter:
         return ApiV2AutoTestsSearchPostRequest(filter=autotests_filter, includes=autotests_includes)
 
     @staticmethod
+    def testrun_id_and_configuration_id_to_test_results_search_post_request(
+            testrun_id: str,
+            configuration_id: str) -> ApiV2TestResultsSearchPostRequest:
+        return ApiV2TestResultsSearchPostRequest(
+            test_run_ids=[testrun_id],
+            configuration_ids=[configuration_id])
+
+    @staticmethod
     def testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
             testrun_id: str,
             configuration_id: str) -> ApiV2TestResultsSearchPostRequest:

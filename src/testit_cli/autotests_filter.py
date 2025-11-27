@@ -15,7 +15,34 @@ class AutotestsFilter:
         self.__api_client = api_client
         self.__config = config
 
-    def create_filter(self):
+    def create_filter(self, in_progress_only: bool = False) -> str:
+        if in_progress_only:
+            return self.__create_filter_for_in_progress()
+        return self.__create_filter_all()
+
+    def __create_filter_all(self) -> str:
+        """Function returns str of filter by autotests for test Framework run command."""
+        test_results_search_post_request: ApiV2TestResultsSearchPostRequest = (
+            Converter.testrun_id_and_configuration_id_to_test_results_search_post_request(
+                self.__config.testrun_id,
+                self.__config.configuration_id))
+        test_results = self.__api_client.get_test_results(test_results_search_post_request)
+
+        if len(test_results) == 0:
+            exception = f"Couldn't get the test results by test run id \"{self.__config.testrun_id}\" " + \
+                        f"and configuration id \"{self.__config.configuration_id}\""
+
+            raise Exception(exception)
+
+        autotest_ids: list[int] = Converter.test_result_short_get_models_to_autotest_ids(test_results)
+        autotests_search_post_request: ApiV2AutoTestsSearchPostRequest = (
+            Converter.autotest_ids_to_autotests_search_post_request(autotest_ids))
+        autotests: list[AutoTestApiResult] = self.__api_client.get_autotests(autotests_search_post_request)
+        external_keys: list[str] = Converter.autotest_models_to_external_keys(autotests)
+
+        return FilterFactory.get(self.__config, external_keys)
+
+    def __create_filter_for_in_progress(self) -> str:
         """Function returns str of filter by autotests for test Framework run command."""
         test_results_search_post_request: ApiV2TestResultsSearchPostRequest = (
             Converter.testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
@@ -25,7 +52,7 @@ class AutotestsFilter:
 
         if len(test_results) == 0:
             exception = f"Couldn't get the test results in progress by test run id \"{self.__config.testrun_id}\" " + \
-                f"and configuration id \"{self.__config.configuration_id}\""
+                        f"and configuration id \"{self.__config.configuration_id}\""
 
             raise Exception(exception)
 
