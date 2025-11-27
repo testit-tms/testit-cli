@@ -166,6 +166,7 @@ def upload_attachments_for_test_run(url, token, testrun_id, debug, attachments, 
 
 PYTHON_FRAMEWORKS = ['pytest', 'robotframework', 'behave', 'nose']
 JAVA_FRAMEWORKS = ['gradle-testng', 'gradle-junit5', 'gradle-junit4', 'gradle-cucumber', 'maven-testng', 'maven-junit5', 'maven-junit4', 'maven-cucumber']
+KOTLIN_FRAMEWORKS = ['kotest']
 JAVASCRIPT_FRAMEWORKS = ['cucumberjs', 'codeceptjs', 'jest', 'mocha', 'playwright', 'testcafe']
 DOTNET_FRAMEWORKS = ['mstest', 'nunit', 'xunit', 'specflow']
 GOLANG_FRAMEWORKS = ['golang']
@@ -177,7 +178,7 @@ SWIFT_FRAMEWORKS = ['xctest']
 @click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
 @click.option("-ci", "--configuration-id", type=str, envvar='TMS_CONFIGURATION_ID', required=True, help="Set configuration id (15dbb164-c1aa-4cbf-830c-8c01ae14f4fb)", callback=validate_uuid)
 @click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', required=True, help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", callback=validate_uuid)
-@click.option("-f", "--framework", type=click.Choice(PYTHON_FRAMEWORKS + JAVA_FRAMEWORKS + JAVASCRIPT_FRAMEWORKS + DOTNET_FRAMEWORKS + GOLANG_FRAMEWORKS + SWIFT_FRAMEWORKS), required=True, help="Set test framework")
+@click.option("-f", "--framework", type=click.Choice(PYTHON_FRAMEWORKS + JAVA_FRAMEWORKS + KOTLIN_FRAMEWORKS + JAVASCRIPT_FRAMEWORKS + DOTNET_FRAMEWORKS + GOLANG_FRAMEWORKS + SWIFT_FRAMEWORKS), required=True, help="Set test framework")
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
