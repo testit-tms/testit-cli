@@ -142,4 +142,3 @@ class FilterFactory:
     def __initialize_xctest_filter(external_keys: typing.List[str]) -> str:
         """Initialize filter for XCTest run"""
         return ';'.join(external_keys)
-

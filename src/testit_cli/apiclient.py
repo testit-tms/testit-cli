@@ -85,7 +85,7 @@ class ApiClient:
             return Converter.test_run_v2_get_model_to_test_run(test_run)
 
         logging.error(f"Test run {test_run_id} not found!")
-        raise Exception("Test run {test_run_id} not found!")
+        raise Exception(f"Test run {test_run_id} not found!")
 
     def get_autotests(self, model: ApiV2AutoTestsSearchPostRequest) \
             -> list[AutoTestApiResult]:
