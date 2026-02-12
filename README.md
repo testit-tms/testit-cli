@@ -22,5 +22,9 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 5.3     | 2.4.5.post530  |
 | 5.4     | 2.4.11.post540 |
 | 5.5     | 2.7.2.post550  |
-| 5.6     | 2.8.0.post560  |
-| Cloud   | 2.8.0          |
+| 5.6     | 2.8.1.post560  |
+| Cloud   | 2.8.0 +        |
+
+1. For current versions, see the releases tab.
+2. Starting with 5.2, we have added a TMS postscript, which means that the utility is compatible with a specific enterprise version.
+3. If you are in doubt about which version to use, check with the support staff. support@yoonion.ru
