@@ -167,7 +167,7 @@ def upload_attachments_for_test_run(url, token, testrun_id, debug, attachments, 
 PYTHON_FRAMEWORKS = ['pytest', 'robotframework', 'behave', 'nose']
 JAVA_FRAMEWORKS = ['gradle-testng', 'gradle-junit5', 'gradle-junit4', 'gradle-cucumber', 'maven-testng', 'maven-junit5', 'maven-junit4', 'maven-cucumber']
 KOTLIN_FRAMEWORKS = ['kotest']
-JAVASCRIPT_FRAMEWORKS = ['cucumberjs', 'codeceptjs', 'jest', 'mocha', 'playwright', 'testcafe']
+JAVASCRIPT_FRAMEWORKS = ['cucumberjs', 'codeceptjs', 'jest', 'mocha', 'playwright', 'testcafe', 'cypress']
 DOTNET_FRAMEWORKS = ['mstest', 'nunit', 'xunit', 'specflow']
 GOLANG_FRAMEWORKS = ['golang']
 SWIFT_FRAMEWORKS = ['xctest']
