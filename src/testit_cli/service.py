@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
 from testit_api_client.model.attachment_put_model import AttachmentPutModel
@@ -87,7 +88,7 @@ class Service:
         logging.info("Successfully sent test results")
 
     def __update_test_run_with_attachments(self, test_run: TestRun) -> None:
-        attachments: list[AssignAttachmentApiModel] = Converter.attachment_put_models_to_assign_attachments(
+        attachments: typing.List[AssignAttachmentApiModel] = Converter.attachment_put_models_to_assign_attachments(
             self.__upload_attachments())
         test_run.attachments.extend(attachments)
         self.__api_client.update_test_run(test_run)
