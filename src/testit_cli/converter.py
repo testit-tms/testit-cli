@@ -155,8 +155,8 @@ class Converter:
         return AssignAttachmentApiModel(id=attachment_model.id)
 
     @staticmethod
-    def attachment_put_models_to_assign_attachments(attachment_models: list[AttachmentPutModel])\
-            -> list[AssignAttachmentApiModel]:
+    def attachment_put_models_to_assign_attachments(
+            attachment_models: typing.List[AttachmentPutModel]) -> typing.List[AssignAttachmentApiModel]:
         return list(map(lambda x: Converter.attachment_put_model_to_assign_attachment(x), attachment_models))
 
     @classmethod

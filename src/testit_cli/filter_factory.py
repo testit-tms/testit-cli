@@ -27,6 +27,7 @@ class FilterFactory:
             'jest': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
             'mocha': cls.__initialize_codeceptjs_mocha_playwright_filter,
             'playwright': cls.__initialize_codeceptjs_mocha_playwright_filter,
+            'cypress': cls.__initialize_cypress_filter,
             'mstest': cls.__initialize_mstest_nunit_xunit_filter,
             'nunit': cls.__initialize_mstest_nunit_xunit_filter,
             'xunit': cls.__initialize_mstest_nunit_xunit_filter,
@@ -107,6 +108,16 @@ class FilterFactory:
             autotest_keys.append(re.escape(external_key))
 
         return '|'.join(autotest_keys)
+
+    @classmethod
+    def __initialize_cypress_filter(cls, external_keys: typing.List[str]) -> str:
+        """Initialize filter for Cypress run"""
+        autotest_keys = []
+
+        for external_key in external_keys:
+            autotest_keys.append(re.escape(external_key))
+
+        return ';'.join(autotest_keys)
 
     @classmethod
     def __initialize_cucumber_cucumberjs_jest_golang_filter(cls, external_keys: typing.List[str]) -> str:
