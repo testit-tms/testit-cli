@@ -8,11 +8,15 @@ from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi, TestResultsApi, ProjectsApi, WorkflowsApi
 from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
 from testit_api_client.model.api_v2_test_results_search_post_request import ApiV2TestResultsSearchPostRequest
+from testit_api_client.model.api_v2_test_runs_id_reruns_post_request import ApiV2TestRunsIdRerunsPostRequest
 from testit_api_client.model.attachment_model import AttachmentModel
 from testit_api_client.model.attachment_put_model import AttachmentPutModel
 from testit_api_client.model.auto_test_model import AutoTestModel
 from testit_api_client.model.auto_test_results_for_test_run_model import AutoTestResultsForTestRunModel
 from testit_api_client.model.create_auto_test_request import CreateAutoTestRequest
+from testit_api_client.model.manual_rerun_api_result import ManualRerunApiResult
+from testit_api_client.model.manual_rerun_select_test_results_api_model_extraction_model import ManualRerunSelectTestResultsApiModelExtractionModel
+from testit_api_client.model.manual_rerun_select_test_results_api_model_filter import ManualRerunSelectTestResultsApiModelFilter
 from testit_api_client.model.test_run_v2_api_result import TestRunV2ApiResult
 from testit_api_client.model.update_auto_test_request import UpdateAutoTestRequest
 from testit_api_client.model.update_empty_request import UpdateEmptyRequest
@@ -46,6 +50,7 @@ class ApiClient:
         self.__attachments_api = AttachmentsApi(api_client=client)
         self.__test_results_api = TestResultsApi(api_client=client)
         self.__projects_api = ProjectsApi(api_client=client)
+        self.__workflows_api = WorkflowsApi(api_client=client)
 
     def create_test_run(self, project_id: str, name: str) -> TestRun:
         """Function creates test run and returns test run id."""
@@ -59,6 +64,55 @@ class ApiClient:
         logging.debug(f"Test run created: {test_run}")
 
         return Converter.test_run_v2_get_model_to_test_run(test_run)
+
+    def rerun_test_run(self, test_run_id: str,
+                       configuration_ids: list[str] = None,
+                       status_codes: list[str] = None,
+                       failure_categories: list[str] = None,
+                       namespace: str = None,
+                       class_name: str = None,
+                       auto_test_global_ids: list[int] = None,
+                       auto_test_tags: list[str] = None,
+                       exclude_auto_test_tags: list[str] = None,
+                       auto_test_name: str = None,
+                       test_result_ids: list[str] = None,
+                       webhook_ids: list[str] = None) -> None:
+        """Function reruns test run and returns manual rerun result."""
+        filter_model = ManualRerunSelectTestResultsApiModelFilter(
+            configuration_ids=configuration_ids,
+            status_codes=status_codes,
+            failure_categories=failure_categories,
+            namespace=namespace,
+            class_name=class_name,
+            auto_test_global_ids=auto_test_global_ids,
+            auto_test_tags=auto_test_tags,
+            exclude_auto_test_tags=exclude_auto_test_tags,
+            name=auto_test_name
+        ) if any(param is not None for param in [
+            configuration_ids, status_codes, failure_categories,
+            namespace, class_name, auto_test_global_ids, auto_test_tags,
+            exclude_auto_test_tags, auto_test_name
+        ]) else None
+
+        extraction_model = ManualRerunSelectTestResultsApiModelExtractionModel(
+            test_result_ids=test_result_ids
+        ) if test_result_ids is not None else None
+
+        model = ApiV2TestRunsIdRerunsPostRequest(
+            filter=filter_model,
+            extraction_model=extraction_model,
+            webhook_ids=webhook_ids
+        )
+        
+        logging.debug(f"Rerunning test run {test_run_id} with model: {model}")
+
+        result: ManualRerunApiResult = self.__test_run_api.api_v2_test_runs_id_reruns_post(
+            id=test_run_id,
+            api_v2_test_runs_id_reruns_post_request=model
+        )
+
+        logging.info(f'Reran testrun (ID: {test_run_id})\nTest results count: {result.test_results_count}')
+        logging.debug(f"Test run rerun result: {result}")
 
     def update_test_run(self, test_run: TestRun) -> None:
         """Function updates test run."""
