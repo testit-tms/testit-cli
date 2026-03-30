@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import Optional
 
-from .status import Status
 from .status_type import StatusType
 
 
