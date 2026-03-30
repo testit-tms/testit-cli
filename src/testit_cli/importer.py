@@ -1,4 +1,5 @@
 import hashlib
+import typing
 
 from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
 from testit_api_client.model.auto_test_api_result import AutoTestApiResult
@@ -15,7 +16,9 @@ class Importer:
         self.__api_client = api_client
         self.__config = config
 
-    def send_results(self, results: list[TestCase]) -> None:
+    def send_results(self, results: typing.List[TestCase]) -> None:
+        status_codes = self.__api_client.get_status_codes(self.__config.project_id)
+
         for result in tqdm(results, desc="Uploading"):
             external_id = self.__get_external_id(
                 result.get_name_space()
@@ -46,7 +49,7 @@ class Importer:
             self.__api_client.send_test_result(
                 self.__config.testrun_id,
                 Converter.test_result_to_testrun_result_post_model(
-                    result, external_id, self.__config.configuration_id
+                    result, external_id, self.__config.configuration_id, status_codes
                 ),
             )
 

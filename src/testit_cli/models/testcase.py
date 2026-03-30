@@ -1,9 +1,8 @@
 from datetime import timedelta
 from typing import Optional
 
-from testit_api_client.models import AvailableTestResultOutcome
-
 from .status import Status
+from .status_type import StatusType
 
 
 class TestCase:
@@ -11,7 +10,8 @@ class TestCase:
     __name_space: Optional[str] = None
     __class_name: Optional[str] = None
     __duration: Optional[timedelta] = None
-    __status: Optional[Status] = None
+    __status: Optional[str] = None
+    __status_type: Optional[StatusType] = None
     __message: Optional[str] = None
     __trace: Optional[str] = None
     __is_flaky: Optional[bool] = None
@@ -21,7 +21,8 @@ class TestCase:
         self.__name_space = name_space
         self.__class_name = class_name
         self.__duration = timedelta(seconds=float(duration))
-        self.__status = Status.PASSED
+        self.__status = "passed"
+        self.__status_type = StatusType.SUCCEEDED
         self.__trace = ""
 
     def get_name(self) -> Optional[str]:
@@ -48,11 +49,17 @@ class TestCase:
     def set_trace(self, value: str) -> None:
         self.__trace = value
 
-    def get_status(self) -> AvailableTestResultOutcome:
-        return AvailableTestResultOutcome(self.__status.value)
+    def get_status(self) -> str:
+        return self.__status
 
-    def set_status(self, value: Status) -> None:
+    def set_status(self, value: str) -> None:
         self.__status = value
+
+    def get_status_type(self) -> StatusType:
+        return self.__status_type
+
+    def set_status_type(self, value: StatusType) -> None:
+        self.__status_type = value
 
     def get_is_flaky(self) -> Optional[bool]:
         return self.__is_flaky

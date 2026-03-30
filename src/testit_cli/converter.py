@@ -15,7 +15,8 @@ from testit_api_client.models import (
     AutoTestResultsForTestRunModel,
     AttachmentPutModel,
     LinkPutModel,
-    TestResultOutcome,
+    TestStatusType,
+    TestStatusApiType,
     TestResultShortResponse,
 )
 from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
@@ -58,7 +59,7 @@ class Converter:
         return ApiV2TestResultsSearchPostRequest(
             test_run_ids=[testrun_id],
             configuration_ids=[configuration_id],
-            outcomes=[TestResultOutcome("InProgress")])
+            status_types=[TestStatusApiType("InProgress")])
 
     @staticmethod
     def test_result_short_get_models_to_autotest_ids(
@@ -110,16 +111,21 @@ class Converter:
 
     @staticmethod
     def test_result_to_testrun_result_post_model(
-        result: TestCase, external_id: str, configuration_id: str
+        result: TestCase, external_id: str, configuration_id: str, status_codes: typing.List[str]
     ) -> AutoTestResultsForTestRunModel:
-        return AutoTestResultsForTestRunModel(
+        model = AutoTestResultsForTestRunModel(
             configuration_id=configuration_id,
             auto_test_external_id=external_id,
-            outcome=result.get_status(),
+            status_type=TestStatusType(result.get_status_type()),
             traces=result.get_trace(),
             duration=round(result.get_duration()),
             message=result.get_message(),
         )
+
+        if result.get_status().value.upper() in status_codes:
+            model.status_code = result.get_status().value
+
+        return model
 
     @classmethod
     def test_run_v2_get_model_to_test_run(cls, test_run_model: TestRunV2ApiResult) -> TestRun:
