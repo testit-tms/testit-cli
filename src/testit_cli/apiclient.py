@@ -103,7 +103,7 @@ class ApiClient:
             extraction_model=extraction_model,
             webhook_ids=webhook_ids
         )
-        
+
         logging.debug(f"Rerunning test run {test_run_id} with model: {model}")
 
         result: ManualRerunApiResult = self.__test_run_api.api_v2_test_runs_id_reruns_post(
