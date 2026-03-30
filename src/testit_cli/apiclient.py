@@ -5,7 +5,7 @@ import typing
 
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration
-from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi, TestResultsApi
+from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi, TestResultsApi, ProjectsApi, WorkflowsApi
 from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
 from testit_api_client.model.api_v2_test_results_search_post_request import ApiV2TestResultsSearchPostRequest
 from testit_api_client.model.attachment_model import AttachmentModel
@@ -16,7 +16,12 @@ from testit_api_client.model.create_auto_test_request import CreateAutoTestReque
 from testit_api_client.model.test_run_v2_api_result import TestRunV2ApiResult
 from testit_api_client.model.update_auto_test_request import UpdateAutoTestRequest
 from testit_api_client.model.update_empty_request import UpdateEmptyRequest
-from testit_api_client.models import TestResultShortResponse, CreateEmptyRequest, AutoTestApiResult
+from testit_api_client.models import (
+    TestResultShortResponse,
+    CreateEmptyRequest,
+    AutoTestApiResult,
+    CreateProjectRequest
+)
 
 from .converter import Converter
 from .models.testrun import TestRun
@@ -40,6 +45,7 @@ class ApiClient:
         self.__autotest_api = AutoTestsApi(api_client=client)
         self.__attachments_api = AttachmentsApi(api_client=client)
         self.__test_results_api = TestResultsApi(api_client=client)
+        self.__projects_api = ProjectsApi(api_client=client)
 
     def create_test_run(self, project_id: str, name: str) -> TestRun:
         """Function creates test run and returns test run id."""
@@ -178,3 +184,16 @@ class ApiClient:
         logging.debug(f"Got test results: {test_results}")
 
         return test_results
+
+    def create_project(self, name: str, description: str = None, is_favorite: bool = None, workflow_id: str = None) -> str:
+        """Function creates project and returns project id."""
+        model = CreateProjectRequest(name=name, description=description, is_favorite=is_favorite, workflow_id=workflow_id)
+        model = HtmlEscapeUtils.escape_html_in_object(model)
+        logging.debug(f"Creating project with model: {model}")
+
+        project = self.__projects_api.create_project(create_project_request=model)
+
+        logging.info(f'Created new project (ID: {project.id})')
+        logging.debug(f"Project created: {project}")
+
+        return str(project.id)

@@ -103,3 +103,13 @@ class Service:
         autotests_filter = self.__autotests_filter.create_filter()
 
         self.__write_to_output(autotests_filter)
+
+    def create_project(self):
+        project_id = self.__api_client.create_project(
+            self.__config.project_name,
+            self.__config.project_description,
+            self.__config.project_is_favorite,
+            self.__config.project_workflow_id
+        )
+
+        self.__write_to_output(project_id)

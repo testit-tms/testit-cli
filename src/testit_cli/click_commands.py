@@ -76,7 +76,8 @@ class ExtraArgsForOption(click.Option):
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
 def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
     """Uploading results from different streams"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", ignore_flaky_failure)
+    config = Config(url, token, "", "", "", False, "", configuration_id, testrun_id, "", separator, namespace, classname,
+                    list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", ignore_flaky_failure)
     service = ServiceFactory().get(config)
 
     service.upload_results()
@@ -103,7 +104,7 @@ def import_results(url, token, project_id, configuration_id, testrun_id, testrun
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
 
-    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name,
+    config = Config(url, token, project_id, "", "", False, "", configuration_id, testrun_id, testrun_name,
                     separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)),
                     disable_cert_validation, "", ignore_flaky_failure)
     service = ServiceFactory().get(config)
@@ -128,7 +129,8 @@ def testrun():
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def create_test_run(url, token, project_id, testrun_name, output, debug, attachments, disable_cert_validation):
     """Creating a new test run"""
-    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", [], debug, output, list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
+    config = Config(url, token, project_id, "", "", False, "", "", "", testrun_name, "", "", "", [],
+                    debug, output, list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
     service = ServiceFactory().get(config)
 
     service.create_test_run()
@@ -143,7 +145,8 @@ def create_test_run(url, token, project_id, testrun_name, output, debug, attachm
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Completing the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
+    config = Config(url, token, "", "", "", False, "", "", testrun_id, "", "", "", "", [], debug, "",
+                    list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
     service = ServiceFactory().get(config)
 
     service.finished_test_run()
@@ -158,7 +161,8 @@ def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_v
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def upload_attachments_for_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Uploading attachments for the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
+    config = Config(url, token, "", "", "", False, "", "", testrun_id, "", "", "", "", [], debug, "",
+                    list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
     service = ServiceFactory().get(config)
 
     service.upload_attachments_for_test_run()
@@ -184,7 +188,32 @@ SWIFT_FRAMEWORKS = ['xctest']
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def create_filter_for_framework(url, token, configuration_id, testrun_id, framework, debug, output, disable_cert_validation):
     """Creating filter by autotests for test frameworks"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", "", "", "", [], debug, output, [], disable_cert_validation, framework, False)
+    config = Config(url, token, "", "", "", False, "", configuration_id, testrun_id, "", "", "", "", [], debug, output, [], disable_cert_validation, framework, False)
     service = ServiceFactory().get(config)
 
     service.create_filter_for_test_framework()
+
+
+@execute.group()
+def project():
+    """Working with projects"""
+    pass
+
+
+@project.command("create")
+@click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
+@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
+@click.option("-n", "--name", type=str, envvar='TMS_PROJECT_NAME', required=True, help="Set project name (Project01)")
+@click.option("-d", "--description", type=str, help="Set project description (Description of the project)", default=None)
+@click.option("-f", "--favorite", is_flag=True, help="Mark project as favorite")
+@click.option("-wf", "--workflow-id", type=str, help="Set workflow id for the project", default=None)
+@click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
+@click.option("-d", "--debug", is_flag=True, help="Set debug logs")
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def create_project(url, token, name, description, favorite, workflow_id, output, debug, disable_cert_validation):
+    """Creating a new project"""
+    config = Config(url, token, "", name, description, favorite, workflow_id,
+                    "", "", "", "", "", "", [], debug, output, [], disable_cert_validation, "", False)
+    service = ServiceFactory().get(config)
+
+    service.create_project()
