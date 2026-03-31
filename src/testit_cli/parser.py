@@ -3,7 +3,7 @@ import typing
 from xml.dom import minidom
 
 from .models.config import Config
-from .models.status import Status
+from .models.status_type import StatusType
 from .models.testcase import TestCase
 from .file_worker import FileWorker
 
@@ -64,11 +64,13 @@ class Parser:
 
                 if elem.childNodes is not None:
                     for child in elem.childNodes:
+                        testcase.set_status(child.nodeName)
+
                         if child.attributes and self.__MESSAGE_ATTRIBUTE_NAME in child.attributes:
                             testcase.set_message(child.attributes[self.__MESSAGE_ATTRIBUTE_NAME].value)
 
                         if child.nodeName == "skipped":
-                            testcase.set_status(Status.SKIPPED)
+                            testcase.set_status_type(StatusType.INCOMPLETE)
                             continue
 
                         # if in failure node names and not flaky
@@ -79,7 +81,7 @@ class Parser:
                             if len(child.childNodes) == 0 and len(child.attributes) == 0:
                                 continue
 
-                            testcase.set_status(Status.FAILED)
+                            testcase.set_status_type(StatusType.FAILED)
 
                         testcase.set_trace(
                             testcase.get_trace() + self.__form_trace(child.childNodes))

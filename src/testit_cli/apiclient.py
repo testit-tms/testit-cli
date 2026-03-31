@@ -6,25 +6,27 @@ import typing
 from testit_api_client import ApiClient as TmsClient
 from testit_api_client import Configuration
 from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi, TestResultsApi, ProjectsApi, WorkflowsApi
-from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
-from testit_api_client.model.api_v2_test_results_search_post_request import ApiV2TestResultsSearchPostRequest
-from testit_api_client.model.api_v2_test_runs_id_reruns_post_request import ApiV2TestRunsIdRerunsPostRequest
-from testit_api_client.model.attachment_model import AttachmentModel
-from testit_api_client.model.attachment_put_model import AttachmentPutModel
-from testit_api_client.model.auto_test_model import AutoTestModel
-from testit_api_client.model.auto_test_results_for_test_run_model import AutoTestResultsForTestRunModel
-from testit_api_client.model.create_auto_test_request import CreateAutoTestRequest
-from testit_api_client.model.manual_rerun_api_result import ManualRerunApiResult
-from testit_api_client.model.manual_rerun_select_test_results_api_model_extraction_model import ManualRerunSelectTestResultsApiModelExtractionModel
-from testit_api_client.model.manual_rerun_select_test_results_api_model_filter import ManualRerunSelectTestResultsApiModelFilter
-from testit_api_client.model.test_run_v2_api_result import TestRunV2ApiResult
-from testit_api_client.model.update_auto_test_request import UpdateAutoTestRequest
-from testit_api_client.model.update_empty_request import UpdateEmptyRequest
 from testit_api_client.models import (
+    ApiV2AutoTestsSearchPostRequest,
+    ApiV2TestResultsSearchPostRequest,
+    ApiV2TestRunsIdRerunsPostRequest,
+    AttachmentModel,
+    AttachmentPutModel,
+    AutoTestModel,
+    AutoTestResultsForTestRunModel,
+    CreateAutoTestRequest,
+    ManualRerunApiResult,
+    ManualRerunSelectTestResultsApiModelExtractionModel,
+    ManualRerunSelectTestResultsApiModelFilter,
+    TestRunV2ApiResult,
+    UpdateAutoTestRequest,
+    UpdateEmptyRequest,
     TestResultShortResponse,
     CreateEmptyRequest,
     AutoTestApiResult,
-    CreateProjectRequest
+    ProjectModel,
+    WorkflowApiResult,
+    CreateProjectRequest,
 )
 
 from .converter import Converter
@@ -238,6 +240,21 @@ class ApiClient:
         logging.debug(f"Got test results: {test_results}")
 
         return test_results
+
+    def __get_project(self, project_id: str) -> ProjectModel:
+        """Function returns ProjectModel."""
+        return self.__projects_api.get_project_by_id(id=project_id)
+
+    def __get_workflow_by_id(self, workflow_id: str) -> WorkflowApiResult:
+        """Function returns WorkflowApiResult."""
+        return self.__workflows_api.api_v2_workflows_id_get(id=workflow_id)
+
+    def get_status_codes(self, project_id: str) -> typing.List[str]:
+        """Function returns list of statuses from project."""
+        project: ProjectModel = self.__get_project(project_id)
+        workflow: WorkflowApiResult = self.__get_workflow_by_id(project.workflow_id)
+
+        return [status.code for status in workflow.statuses]
 
     def create_project(self, name: str, description: str = None, is_favorite: bool = None, workflow_id: str = None) -> str:
         """Function creates project and returns project id."""
