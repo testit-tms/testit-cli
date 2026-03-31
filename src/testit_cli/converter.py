@@ -122,8 +122,8 @@ class Converter:
             message=result.get_message(),
         )
 
-        if result.get_status().value.upper() in status_codes:
-            model.status_code = result.get_status().value
+        if result.get_status().upper() in status_codes:
+            model.status_code = result.get_status()
 
         return model
 
