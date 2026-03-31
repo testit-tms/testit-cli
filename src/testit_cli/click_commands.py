@@ -76,7 +76,20 @@ class ExtraArgsForOption(click.Option):
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
 def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
     """Uploading results from different streams"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", ignore_flaky_failure)
+    config = Config(
+        url=url,
+        token=token,
+        configuration_id=configuration_id,
+        testrun_id=testrun_id,
+        separator=separator,
+        namespace=namespace,
+        classname=classname,
+        results=list(chain.from_iterable(results)),
+        is_debug=debug,
+        paths_to_attachments=list(chain.from_iterable(attachments)),
+        disable_cert_validation=disable_cert_validation,
+        ignore_flaky_failure=ignore_flaky_failure,
+    )
     service = ServiceFactory().get(config)
 
     service.upload_results()
@@ -103,9 +116,22 @@ def import_results(url, token, project_id, configuration_id, testrun_id, testrun
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
 
-    config = Config(url, token, project_id, configuration_id, testrun_id, testrun_name,
-                    separator, namespace, classname, list(chain.from_iterable(results)), debug, "", list(chain.from_iterable(attachments)),
-                    disable_cert_validation, "", ignore_flaky_failure)
+    config = Config(
+        url=url,
+        token=token,
+        project_id=project_id,
+        configuration_id=configuration_id,
+        testrun_id=testrun_id,
+        testrun_name=testrun_name,
+        separator=separator,
+        namespace=namespace,
+        classname=classname,
+        results=list(chain.from_iterable(results)),
+        is_debug=debug,
+        paths_to_attachments=list(chain.from_iterable(attachments)),
+        disable_cert_validation=disable_cert_validation,
+        ignore_flaky_failure=ignore_flaky_failure,
+    )
     service = ServiceFactory().get(config)
 
     service.import_results()
@@ -128,7 +154,16 @@ def testrun():
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def create_test_run(url, token, project_id, testrun_name, output, debug, attachments, disable_cert_validation):
     """Creating a new test run"""
-    config = Config(url, token, project_id, "", "", testrun_name, "", "", "", [], debug, output, list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
+    config = Config(
+        url=url,
+        token=token,
+        project_id=project_id,
+        testrun_name=testrun_name,
+        is_debug=debug,
+        output=output,
+        paths_to_attachments=list(chain.from_iterable(attachments)),
+        disable_cert_validation=disable_cert_validation,
+    )
     service = ServiceFactory().get(config)
 
     service.create_test_run()
@@ -143,7 +178,14 @@ def create_test_run(url, token, project_id, testrun_name, output, debug, attachm
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Completing the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
+    config = Config(
+        url=url,
+        token=token,
+        testrun_id=testrun_id,
+        is_debug=debug,
+        paths_to_attachments=list(chain.from_iterable(attachments)),
+        disable_cert_validation=disable_cert_validation,
+    )
     service = ServiceFactory().get(config)
 
     service.finished_test_run()
@@ -158,10 +200,61 @@ def complete_test_run(url, token, testrun_id, debug, attachments, disable_cert_v
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def upload_attachments_for_test_run(url, token, testrun_id, debug, attachments, disable_cert_validation):
     """Uploading attachments for the test run"""
-    config = Config(url, token, "", "", testrun_id, "", "", "", "", [], debug, "", list(chain.from_iterable(attachments)), disable_cert_validation, "", False)
+    config = Config(
+        url=url,
+        token=token,
+        testrun_id=testrun_id,
+        is_debug=debug,
+        paths_to_attachments=list(chain.from_iterable(attachments)),
+        disable_cert_validation=disable_cert_validation,
+    )
     service = ServiceFactory().get(config)
 
     service.upload_attachments_for_test_run()
+
+
+@testrun.command("rerun")
+@click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
+@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
+@click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', required=True, help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", callback=validate_uuid)
+@click.option("-ci", "--configuration-id", type=str, envvar='TMS_CONFIGURATION_ID', multiple=True, help="Set configuration id (15dbb164-c1aa-4cbf-830c-8c01ae14f4fb)", callback=validate_uuid)
+@click.option("-sc", "--status-code", type=str, multiple=True, help="Set status code for filtering test results")
+@click.option("-fc", "--failure-category", type=str, multiple=True, help="Set failure category for filtering test results")
+@click.option("-ns", "--namespace", type=str, help="Set namespace for filtering test results")
+@click.option("-cn", "--classname", type=str, help="Set class name for filtering test results")
+@click.option("-atgi", "--autotest-global-id", type=int, multiple=True, help="Set autotest global ID for filtering test results")
+@click.option("-att", "--autotest-tag", type=str, multiple=True, help="Set autotest tag for filtering test results")
+@click.option("-eatt", "--exclude-autotest-tag", type=str, multiple=True, help="Set autotest tag to exclude from filtering test results")
+@click.option("-atn", "--autotest-name", type=str, help="Set autotest name for filtering test results")
+@click.option("-tri", "--test-result-id", type=str, multiple=True, help="Set test result ID for extraction (UUID)", callback=validate_uuid)
+@click.option("-wi", "--webhook-id", type=str, multiple=True, help="Set webhook ID for rerunning (UUID)", callback=validate_uuid)
+@click.option("-d", "--debug", is_flag=True, help="Set debug logs")
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def rerun_test_run(url, token, testrun_id, configuration_id, status_code, failure_category,
+                   namespace, classname, autotest_global_id, autotest_tag, exclude_autotest_tag,
+                   autotest_name, test_result_id, webhook_id, debug, disable_cert_validation):
+    """Rerunning the test run"""
+    config = Config(
+        url=url,
+        token=token,
+        testrun_id=testrun_id,
+        is_debug=debug,
+        disable_cert_validation=disable_cert_validation,
+        configuration_ids=list(configuration_id) if configuration_id else None,
+        status_codes=list(status_code) if status_code else None,
+        failure_categories=list(failure_category) if failure_category else None,
+        namespace=namespace,
+        classname=classname,
+        auto_test_global_ids=list(autotest_global_id) if autotest_global_id else None,
+        auto_test_tags=list(autotest_tag) if autotest_tag else None,
+        exclude_auto_test_tags=list(exclude_autotest_tag) if exclude_autotest_tag else None,
+        auto_test_name=autotest_name,
+        test_result_ids=list(test_result_id) if test_result_id else None,
+        webhook_ids=list(webhook_id) if webhook_id else None,
+    )
+    service = ServiceFactory().get(config)
+
+    service.rerun_test_run()
 
 
 PYTHON_FRAMEWORKS = ['pytest', 'robotframework', 'behave', 'nose']
@@ -184,7 +277,50 @@ SWIFT_FRAMEWORKS = ['xctest']
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 def create_filter_for_framework(url, token, configuration_id, testrun_id, framework, debug, output, disable_cert_validation):
     """Creating filter by autotests for test frameworks"""
-    config = Config(url, token, "", configuration_id, testrun_id, "", "", "", "", [], debug, output, [], disable_cert_validation, framework, False)
+    config = Config(
+        url=url,
+        token=token,
+        configuration_id=configuration_id,
+        testrun_id=testrun_id,
+        is_debug=debug,
+        output=output,
+        disable_cert_validation=disable_cert_validation,
+        framework=framework,
+    )
     service = ServiceFactory().get(config)
 
     service.create_filter_for_test_framework()
+
+
+@execute.group()
+def project():
+    """Working with projects"""
+    pass
+
+
+@project.command("create")
+@click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
+@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
+@click.option("-n", "--name", type=str, envvar='TMS_PROJECT_NAME', required=True, help="Set project name (Project01)")
+@click.option("-d", "--description", type=str, help="Set project description (Description of the project)", default=None)
+@click.option("-f", "--favorite", is_flag=True, help="Mark project as favorite")
+@click.option("-wf", "--workflow-id", type=str, help="Set workflow id for the project", default=None)
+@click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
+@click.option("-d", "--debug", is_flag=True, help="Set debug logs")
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def create_project(url, token, name, description, favorite, workflow_id, output, debug, disable_cert_validation):
+    """Creating a new project"""
+    config = Config(
+        url=url,
+        token=token,
+        project_name=name,
+        project_description=description,
+        project_is_favorite=favorite,
+        project_workflow_id=workflow_id,
+        is_debug=debug,
+        output=output,
+        disable_cert_validation=disable_cert_validation,
+    )
+    service = ServiceFactory().get(config)
+
+    service.create_project()

@@ -43,6 +43,22 @@ class Service:
 
         self.__write_to_output(test_run.id)
 
+    def rerun_test_run(self) -> None:
+        self.__api_client.rerun_test_run(
+            self.__config.testrun_id,
+            configuration_ids=self.__config.configuration_ids,
+            status_codes=self.__config.status_codes,
+            failure_categories=self.__config.failure_categories,
+            namespace=self.__config.namespace,
+            class_name=self.__config.classname,
+            auto_test_global_ids=self.__config.auto_test_global_ids,
+            auto_test_tags=self.__config.auto_test_tags,
+            exclude_auto_test_tags=self.__config.exclude_auto_test_tags,
+            auto_test_name=self.__config.auto_test_name,
+            test_result_ids=self.__config.test_result_ids,
+            webhook_ids=self.__config.webhook_ids
+        )
+
     def finished_test_run(self):
         test_run = self.__api_client.get_test_run(self.__config.testrun_id)
         self.__update_test_run_with_attachments(test_run)
@@ -103,3 +119,13 @@ class Service:
         autotests_filter = self.__autotests_filter.create_filter()
 
         self.__write_to_output(autotests_filter)
+
+    def create_project(self):
+        project_id = self.__api_client.create_project(
+            self.__config.project_name,
+            self.__config.project_description,
+            self.__config.project_is_favorite,
+            self.__config.project_workflow_id
+        )
+
+        self.__write_to_output(project_id)

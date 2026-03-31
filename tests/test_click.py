@@ -1,136 +1,59 @@
-from click.testing import CliRunner
 import pytest
 
-from src.testit_cli.click_commands import execute
+from tests.cli_support import (
+    assert_exit_code,
+    assert_help_ok,
+    assert_invalid_parameter_value,
+    assert_missing_required_option,
+    invoke,
+)
 from tests.helper import Helper
 
 
 @pytest.fixture()
 def runner():
+    from click.testing import CliRunner
+
     return CliRunner()
 
 
-def test_run_without_command(runner):
-    message = ("Options:\n  --help  Show this message and exit.\n\nCommands:\n  autotests_filter  "
-               "Creating filter by autotests for test frameworks\n  results           "
-               "Uploading the test results\n  testrun           Working with the test run\n")
-    result = runner.invoke(execute, [])
-
-    assert message in result.output
-    assert result.exit_code == 0
+def test_root_help_lists_known_commands(runner):
+    result = invoke(runner, [])
+    assert_help_ok(result, "Commands:")
+    for line in Helper.root_help_command_lines():
+        assert line in result.output
 
 
-def test_run_with_another_command(runner):
-    another_command = "run"
-    message = f"Error: No such command '{another_command}'"
-    result = runner.invoke(execute, [another_command])
-
-    assert message in result.output
-    assert result.exit_code == 2
+@pytest.mark.parametrize("argv, unknown_token", Helper.unknown_subcommand_cases())
+def test_unknown_command_reports_error(runner, argv, unknown_token):
+    result = invoke(runner, argv)
+    assert_exit_code(result, 2)
+    assert f"No such command '{unknown_token}'" in result.output
 
 
-@pytest.mark.parametrize("command, message", [
-    ("results", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  import  Uploading the first test results\n  upload  Uploading results from different streams\n"),
-    ("testrun", "Options:\n  --help  Show this message and exit.\n\nCommands:\n  complete            Completing the test run\n  create              Creating a new test run\n  upload_attachments  Uploading attachments for the test run\n")])
-def test_run_with_command(runner, command, message):
-    result = runner.invoke(execute, [command])
-
-    assert message in result.output
-    assert result.exit_code == 0
+@pytest.mark.parametrize("argv, command_lines", Helper.subgroup_help_cases())
+def test_subgroup_help_lists_nested_commands(runner, argv, command_lines):
+    result = invoke(runner, argv)
+    assert_help_ok(result, "Commands:")
+    for fragment in command_lines:
+        assert fragment in result.output
 
 
-def test_run_results_with_another_command(runner):
-    another_command = "run"
-    message = f"Error: No such command '{another_command}'"
-    result = runner.invoke(execute, ["results", another_command])
-
-    assert message in result.output
-    assert result.exit_code == 2
+@pytest.mark.parametrize("argv, missing_long_option", Helper.missing_required_option_cases())
+def test_missing_required_option(runner, argv, missing_long_option):
+    assert_missing_required_option(invoke(runner, argv), missing_long_option)
 
 
-@pytest.mark.parametrize("commands, output", [
-    (Helper.get_command_results_import_with_long_arguments_without_url_argument(), Helper.get_output_for_results_import_without_url_argument()),
-    (Helper.get_command_results_import_with_short_arguments_without_url_argument(), Helper.get_output_for_results_import_without_url_argument()),
-    (Helper.get_command_results_import_with_long_arguments_without_token_argument(), Helper.get_output_for_results_import_without_token_argument()),
-    (Helper.get_command_results_import_with_short_arguments_without_token_argument(), Helper.get_output_for_results_import_without_token_argument()),
-    (Helper.get_command_results_import_with_long_arguments_without_project_id_argument(), Helper.get_output_for_results_import_without_project_id_argument()),
-    (Helper.get_command_results_import_with_short_arguments_without_project_id_argument(), Helper.get_output_for_results_import_without_project_id_argument()),
-    (Helper.get_command_results_import_with_long_arguments_without_configuration_id_argument(), Helper.get_output_for_results_import_without_configuration_id_argument()),
-    (Helper.get_command_results_import_with_short_arguments_without_configuration_id_argument(), Helper.get_output_for_results_import_without_configuration_id_argument()),
-    (Helper.get_command_results_import_with_long_arguments_without_results_argument(), Helper.get_output_for_results_import_without_results_argument()),
-    (Helper.get_command_results_import_with_short_arguments_without_results_argument(), Helper.get_output_for_results_import_without_results_argument()),
-    (Helper.get_command_results_upload_with_long_arguments_without_url_argument(), Helper.get_output_for_results_upload_without_url_argument()),
-    (Helper.get_command_results_upload_with_short_arguments_without_url_argument(), Helper.get_output_for_results_upload_without_url_argument()),
-    (Helper.get_command_results_upload_with_long_arguments_without_token_argument(), Helper.get_output_for_results_upload_without_token_argument()),
-    (Helper.get_command_results_upload_with_short_arguments_without_token_argument(), Helper.get_output_for_results_upload_without_token_argument()),
-    (Helper.get_command_results_upload_with_long_arguments_without_testrun_id_argument(), Helper.get_output_for_results_upload_without_testrun_id_argument()),
-    (Helper.get_command_results_upload_with_short_arguments_without_testrun_id_argument(), Helper.get_output_for_results_upload_without_testrun_id_argument()),
-    (Helper.get_command_results_upload_with_long_arguments_without_configuration_id_argument(), Helper.get_output_for_results_upload_without_configuration_id_argument()),
-    (Helper.get_command_results_upload_with_short_arguments_without_configuration_id_argument(), Helper.get_output_for_results_upload_without_configuration_id_argument()),
-    (Helper.get_command_results_upload_with_long_arguments_without_results_argument(), Helper.get_output_for_results_upload_without_results_argument()),
-    (Helper.get_command_results_upload_with_short_arguments_without_results_argument(), Helper.get_output_for_results_upload_without_results_argument()),
-    (Helper.get_command_testrun_create_with_long_arguments_without_url_argument(), Helper.get_output_for_testrun_create_without_url_argument()),
-    (Helper.get_command_testrun_create_with_short_arguments_without_url_argument(), Helper.get_output_for_testrun_create_without_url_argument()),
-    (Helper.get_command_testrun_create_with_long_arguments_without_token_argument(), Helper.get_output_for_testrun_create_without_token_argument()),
-    (Helper.get_command_testrun_create_with_short_arguments_without_token_argument(), Helper.get_output_for_testrun_create_without_token_argument()),
-    (Helper.get_command_testrun_create_with_long_arguments_without_project_id_argument(), Helper.get_output_for_testrun_create_without_project_id_argument()),
-    (Helper.get_command_testrun_create_with_short_arguments_without_project_id_argument(), Helper.get_output_for_testrun_create_without_project_id_argument()),
-    (Helper.get_command_testrun_create_with_long_arguments_without_output_argument(), Helper.get_output_for_testrun_create_without_output_argument()),
-    (Helper.get_command_testrun_create_with_short_arguments_without_output_argument(), Helper.get_output_for_testrun_create_without_output_argument()),
-    (Helper.get_command_testrun_complete_with_long_arguments_without_url_argument(), Helper.get_output_for_testrun_complete_without_url_argument()),
-    (Helper.get_command_testrun_complete_with_short_arguments_without_url_argument(), Helper.get_output_for_testrun_complete_without_url_argument()),
-    (Helper.get_command_testrun_complete_with_long_arguments_without_token_argument(), Helper.get_output_for_testrun_complete_without_token_argument()),
-    (Helper.get_command_testrun_complete_with_short_arguments_without_token_argument(), Helper.get_output_for_testrun_complete_without_token_argument()),
-    (Helper.get_command_testrun_complete_with_long_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_complete_without_testrun_id_argument()),
-    (Helper.get_command_testrun_complete_with_short_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_complete_without_testrun_id_argument()),
-    (Helper.get_command_testrun_upload_attachments_with_long_arguments_without_url_argument(), Helper.get_output_for_testrun_upload_attachments_without_url_argument()),
-    (Helper.get_command_testrun_upload_attachments_with_short_arguments_without_url_argument(), Helper.get_output_for_testrun_upload_attachments_without_url_argument()),
-    (Helper.get_command_testrun_upload_attachments_with_long_arguments_without_token_argument(), Helper.get_output_for_testrun_upload_attachments_without_token_argument()),
-    (Helper.get_command_testrun_upload_attachments_with_short_arguments_without_token_argument(), Helper.get_output_for_testrun_upload_attachments_without_token_argument()),
-    (Helper.get_command_testrun_upload_attachments_with_long_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_upload_attachments_without_testrun_id_argument()),
-    (Helper.get_command_testrun_upload_attachments_with_short_arguments_without_testrun_id_argument(), Helper.get_output_for_testrun_upload_attachments_without_testrun_id_argument())])
-def test_run_results_with_command_without_arguments(runner, commands, output):
-    result = runner.invoke(execute, commands)
-
-    assert output in result.output
-    assert result.exit_code == 2
-
-# TODO: inifinite loading, fix
-
-# @pytest.mark.parametrize("commands_with_args", [
-#     Helper.get_command_results_import_with_long_arguments(),
-#     Helper.get_command_results_upload_with_long_arguments(),
-#     Helper.get_command_results_import_with_short_arguments(),
-#     Helper.get_command_results_upload_with_short_arguments(),
-#     Helper.get_command_results_import_with_all_long_arguments(),
-#     Helper.get_command_results_upload_with_all_long_arguments(),
-#     Helper.get_command_results_import_with_all_short_arguments(),
-#     Helper.get_command_results_upload_with_all_short_arguments(),
-#     Helper.get_command_testrun_complete_with_long_arguments(),
-#     Helper.get_command_testrun_create_with_long_arguments(),
-#     Helper.get_command_testrun_upload_attachments_with_long_arguments(),
-#     Helper.get_command_testrun_complete_with_short_arguments(),
-#     Helper.get_command_testrun_create_with_short_arguments(),
-#     Helper.get_command_testrun_upload_attachments_with_short_arguments(),
-#     Helper.get_command_testrun_complete_with_all_long_arguments(),
-#     Helper.get_command_testrun_create_with_all_long_arguments(),
-#     Helper.get_command_testrun_upload_attachments_with_all_long_arguments(),
-#     Helper.get_command_testrun_complete_with_all_short_arguments(),
-#     Helper.get_command_testrun_create_with_all_short_arguments(),
-#     Helper.get_command_testrun_upload_attachments_with_all_short_arguments()])
-# def test_run_with_commands_and_arguments(runner, commands_with_args):
-#     result = runner.invoke(execute, commands_with_args)
-
-#     assert result.exit_code == 1
+@pytest.mark.parametrize("argv", Helper.invalid_option_cases())
+def test_unrecognized_option_exits_with_usage_error(runner, argv):
+    assert_exit_code(invoke(runner, argv), 2)
 
 
-@pytest.mark.parametrize("commands_with_another_arg", [
-    Helper.get_command_results_upload_with_another_argument(),
-    Helper.get_command_results_import_with_another_argument(),
-    Helper.get_command_testrun_complete_with_another_argument(),
-    Helper.get_command_testrun_create_with_another_argument(),
-    Helper.get_command_testrun_upload_attachments_with_another_argument()])
-def test_run_with_command_and_another_argument(runner, commands_with_another_arg):
-    result = runner.invoke(execute, commands_with_another_arg)
+@pytest.mark.parametrize("argv, doc_fragment", Helper.command_help_doc_cases())
+def test_command_help_includes_description(runner, argv, doc_fragment):
+    assert_help_ok(invoke(runner, argv), doc_fragment)
 
-    assert result.exit_code == 2
+
+@pytest.mark.parametrize("argv, option_hint", Helper.invalid_rerun_uuid_multi_option_cases())
+def test_rerun_rejects_invalid_uuid_for_optional_multi_options(runner, argv, option_hint):
+    assert_invalid_parameter_value(invoke(runner, argv), option_hint)

@@ -9,11 +9,15 @@ from testit_api_client.apis import AttachmentsApi, AutoTestsApi, TestRunsApi, Te
 from testit_api_client.models import (
     ApiV2AutoTestsSearchPostRequest,
     ApiV2TestResultsSearchPostRequest,
+    ApiV2TestRunsIdRerunsPostRequest,
     AttachmentModel,
     AttachmentPutModel,
     AutoTestModel,
     AutoTestResultsForTestRunModel,
     CreateAutoTestRequest,
+    ManualRerunApiResult,
+    ManualRerunSelectTestResultsApiModelExtractionModel,
+    ManualRerunSelectTestResultsApiModelFilter,
     TestRunV2ApiResult,
     UpdateAutoTestRequest,
     UpdateEmptyRequest,
@@ -22,6 +26,7 @@ from testit_api_client.models import (
     AutoTestApiResult,
     ProjectModel,
     WorkflowApiResult,
+    CreateProjectRequest,
 )
 
 from .converter import Converter
@@ -61,6 +66,55 @@ class ApiClient:
         logging.debug(f"Test run created: {test_run}")
 
         return Converter.test_run_v2_get_model_to_test_run(test_run)
+
+    def rerun_test_run(self, test_run_id: str,
+                       configuration_ids: list[str] = None,
+                       status_codes: list[str] = None,
+                       failure_categories: list[str] = None,
+                       namespace: str = None,
+                       class_name: str = None,
+                       auto_test_global_ids: list[int] = None,
+                       auto_test_tags: list[str] = None,
+                       exclude_auto_test_tags: list[str] = None,
+                       auto_test_name: str = None,
+                       test_result_ids: list[str] = None,
+                       webhook_ids: list[str] = None) -> None:
+        """Function reruns test run and returns manual rerun result."""
+        filter_model = ManualRerunSelectTestResultsApiModelFilter(
+            configuration_ids=configuration_ids,
+            status_codes=status_codes,
+            failure_categories=failure_categories,
+            namespace=namespace,
+            class_name=class_name,
+            auto_test_global_ids=auto_test_global_ids,
+            auto_test_tags=auto_test_tags,
+            exclude_auto_test_tags=exclude_auto_test_tags,
+            name=auto_test_name
+        ) if any(param is not None for param in [
+            configuration_ids, status_codes, failure_categories,
+            namespace, class_name, auto_test_global_ids, auto_test_tags,
+            exclude_auto_test_tags, auto_test_name
+        ]) else None
+
+        extraction_model = ManualRerunSelectTestResultsApiModelExtractionModel(
+            test_result_ids=test_result_ids
+        ) if test_result_ids is not None else None
+
+        model = ApiV2TestRunsIdRerunsPostRequest(
+            filter=filter_model,
+            extraction_model=extraction_model,
+            webhook_ids=webhook_ids
+        )
+
+        logging.debug(f"Rerunning test run {test_run_id} with model: {model}")
+
+        result: ManualRerunApiResult = self.__test_run_api.api_v2_test_runs_id_reruns_post(
+            id=test_run_id,
+            api_v2_test_runs_id_reruns_post_request=model
+        )
+
+        logging.info(f'Reran testrun (ID: {test_run_id})\nTest results count: {result.test_results_count}')
+        logging.debug(f"Test run rerun result: {result}")
 
     def update_test_run(self, test_run: TestRun) -> None:
         """Function updates test run."""
@@ -201,3 +255,16 @@ class ApiClient:
         workflow: WorkflowApiResult = self.__get_workflow_by_id(project.workflow_id)
 
         return [status.code for status in workflow.statuses]
+
+    def create_project(self, name: str, description: str = None, is_favorite: bool = None, workflow_id: str = None) -> str:
+        """Function creates project and returns project id."""
+        model = CreateProjectRequest(name=name, description=description, is_favorite=is_favorite, workflow_id=workflow_id)
+        model = HtmlEscapeUtils.escape_html_in_object(model)
+        logging.debug(f"Creating project with model: {model}")
+
+        project = self.__projects_api.create_project(create_project_request=model)
+
+        logging.info(f'Created new project (ID: {project.id})')
+        logging.debug(f"Project created: {project}")
+
+        return str(project.id)
