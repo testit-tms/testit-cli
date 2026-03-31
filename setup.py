@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "2.8.5"
+VERSION = "2.9.0"
 
 setup(
     name='testit-cli',
