@@ -30,6 +30,7 @@ from testit_api_client.models import (
 )
 
 from .converter import Converter
+from .http_retry import with_http_retries
 from .models.testrun import TestRun
 from .html_escape_utils import HtmlEscapeUtils
 
@@ -60,7 +61,10 @@ class ApiClient:
         model = HtmlEscapeUtils.escape_html_in_object(model)
         logging.debug(f"Creating test run with model: {model}")
 
-        test_run: TestRunV2ApiResult = self.__test_run_api.create_empty(create_empty_request=model)
+        test_run: TestRunV2ApiResult = with_http_retries(
+            lambda: self.__test_run_api.create_empty(create_empty_request=model),
+            label="Create test run",
+        )
 
         logging.info(f'Created new testrun (ID: {test_run.id})')
         logging.debug(f"Test run created: {test_run}")
