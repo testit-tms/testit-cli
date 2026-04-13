@@ -23,7 +23,7 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 5.4     | 2.4.11.post540 |
 | 5.5     | 2.7.2.post550  |
 | 5.6     | 2.8.1.post560  |
-| 5.7     | 2.9.0.post570  |
+| 5.7     | 2.9.1.post570  |
 | Cloud   | 2.8.0 +        |
 
 1. For current versions, see the releases tab.
