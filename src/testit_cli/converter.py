@@ -116,7 +116,7 @@ class Converter:
         model = AutoTestResultsForTestRunModel(
             configuration_id=configuration_id,
             auto_test_external_id=external_id,
-            status_type=TestStatusType(result.get_status_type()),
+            status_type=TestStatusType(result.get_status_type().value),
             traces=result.get_trace(),
             duration=round(result.get_duration()),
             message=result.get_message(),
