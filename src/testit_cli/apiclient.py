@@ -24,7 +24,7 @@ from testit_api_client.models import (
     TestResultShortResponse,
     CreateEmptyRequest,
     AutoTestApiResult,
-    ProjectModel,
+    DetailedProjectApiResult,
     WorkflowApiResult,
     CreateProjectRequest,
 )
@@ -245,8 +245,8 @@ class ApiClient:
 
         return test_results
 
-    def __get_project(self, project_id: str) -> ProjectModel:
-        """Function returns ProjectModel."""
+    def __get_project(self, project_id: str) -> DetailedProjectApiResult:
+        """Function returns DetailedProjectApiResult."""
         return self.__projects_api.get_project_by_id(id=project_id)
 
     def __get_workflow_by_id(self, workflow_id: str) -> WorkflowApiResult:
@@ -255,7 +255,7 @@ class ApiClient:
 
     def get_status_codes(self, project_id: str) -> typing.List[str]:
         """Function returns list of statuses from project."""
-        project: ProjectModel = self.__get_project(project_id)
+        project: DetailedProjectApiResult = self.__get_project(project_id)
         workflow: WorkflowApiResult = self.__get_workflow_by_id(project.workflow_id)
 
         return [status.code for status in workflow.statuses]
