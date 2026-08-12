@@ -13,6 +13,7 @@ from .apiclient import ApiClient
 from .dir_worker import DirWorker
 from .file_worker import FileWorker
 from .importer import Importer
+from .testrun_metadata import merge_links, merge_tags, to_create_link_models, to_link_put_models
 
 
 class Service:
@@ -72,8 +73,31 @@ class Service:
     def __create_test_run(self) -> TestRun:
         return self.__api_client.create_test_run(
             self.__config.project_id,
-            self.__config.testrun_name
+            self.__config.testrun_name,
+            tags=self.__config.testrun_tags,
+            links=to_create_link_models(self.__config.testrun_links),
         )
+
+    def __merge_configured_metadata(self, test_run: TestRun) -> None:
+        test_run.tags = merge_tags(test_run.tags, self.__config.testrun_tags)
+        test_run.links = merge_links(
+            test_run.links,
+            to_link_put_models(self.__config.testrun_links),
+        )
+
+    def __apply_testrun_tags_and_links(self, test_run: TestRun) -> TestRun:
+        if not self.__config.testrun_tags and not self.__config.testrun_links:
+            return test_run
+
+        self.__merge_configured_metadata(test_run)
+        self.__api_client.update_test_run(test_run)
+        logging.info(
+            "Merged tags/links into testrun (ID: %s): tags=%s links=%s",
+            test_run.id,
+            self.__config.testrun_tags,
+            self.__config.testrun_links,
+        )
+        return test_run
 
     def __upload_attachments(self) -> list[AttachmentPutModel]:
         files = []
@@ -94,6 +118,7 @@ class Service:
         else:
             test_run = self.__api_client.get_test_run(self.__config.testrun_id)
             self.__config.project_id = test_run.project_id
+            test_run = self.__apply_testrun_tags_and_links(test_run)
 
         logging.info("Sending test results to Test IT ...")
 
@@ -104,6 +129,7 @@ class Service:
         logging.info("Successfully sent test results")
 
     def __update_test_run_with_attachments(self, test_run: TestRun) -> None:
+        self.__merge_configured_metadata(test_run)
         attachments: typing.List[AssignAttachmentApiModel] = Converter.attachment_put_models_to_assign_attachments(
             self.__upload_attachments())
         test_run.attachments.extend(attachments)

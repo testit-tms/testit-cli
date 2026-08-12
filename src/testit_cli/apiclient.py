@@ -55,9 +55,20 @@ class ApiClient:
         self.__projects_api = ProjectsApi(api_client=client)
         self.__workflows_api = WorkflowsApi(api_client=client)
 
-    def create_test_run(self, project_id: str, name: str) -> TestRun:
+    def create_test_run(
+        self,
+        project_id: str,
+        name: str,
+        tags: typing.Optional[typing.List[str]] = None,
+        links: typing.Optional[typing.List] = None,
+    ) -> TestRun:
         """Function creates test run and returns test run id."""
-        model = CreateEmptyRequest(project_id=project_id, name=name)
+        create_kwargs = {"project_id": project_id, "name": name}
+        if tags:
+            create_kwargs["tags"] = tags
+        if links:
+            create_kwargs["links"] = links
+        model = CreateEmptyRequest(**create_kwargs)
         model = HtmlEscapeUtils.escape_html_in_object(model)
         logging.debug(f"Creating test run with model: {model}")
 
@@ -67,6 +78,13 @@ class ApiClient:
         )
 
         logging.info(f'Created new testrun (ID: {test_run.id})')
+        if tags or links:
+            logging.info(
+                "Applied tags/links on create for testrun (ID: %s): tags=%s links=%s",
+                test_run.id,
+                tags,
+                links,
+            )
         logging.debug(f"Test run created: {test_run}")
 
         return Converter.test_run_v2_get_model_to_test_run(test_run)

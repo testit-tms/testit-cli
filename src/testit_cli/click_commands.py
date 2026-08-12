@@ -4,6 +4,7 @@ from itertools import chain
 
 from .models.config import Config
 from .service_factory import ServiceFactory
+from .testrun_metadata import parse_testrun_links, parse_testrun_tags
 from .validation import validate_uuid, validate_url
 
 
@@ -61,11 +62,24 @@ class ExtraArgsForOption(click.Option):
         return retval
 
 
+_TESTRUN_TAGS_HELP = (
+    "Test run tags: comma-separated or JSON array "
+    "(smoke,nightly or [\"smoke\",\"nightly\"])"
+)
+_TESTRUN_LINKS_HELP = (
+    "Test run links as JSON array "
+    '([{"url":"https://ci.example/jobs/1","title":"CI Job","type":"Related"}]). '
+    "Types: Related, BlockedBy, Defect, Issue, Requirement, Repository"
+)
+
+
 @results.command("upload")
 @click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
 @click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
 @click.option("-ci", "--configuration-id", type=str, envvar='TMS_CONFIGURATION_ID', required=True, help="Set configuration id (15dbb164-c1aa-4cbf-830c-8c01ae14f4fb)", callback=validate_uuid)
 @click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', required=True, help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", callback=validate_uuid)
+@click.option("-trt", "--testruntags", type=str, envvar='TMS_TEST_RUN_TAGS', default=None, help=_TESTRUN_TAGS_HELP)
+@click.option("-trl", "--testrunlinks", type=str, envvar='TMS_TEST_RUN_LINKS', default=None, help=_TESTRUN_LINKS_HELP)
 @click.option("-s", "--separator", type=str, help="Separate the classname value in the results into namespace and classname (.)", default=None)
 @click.option("-ns", "--namespace", type=str, help="Set namespace (NameSpace01)", default=None)
 @click.option("-cn", "--classname", type=str, help="Set classname (ClassName01)", default=None)
@@ -74,13 +88,15 @@ class ExtraArgsForOption(click.Option):
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
-def upload_results(url, token, configuration_id, testrun_id, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
+def upload_results(url, token, configuration_id, testrun_id, testruntags, testrunlinks, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
     """Uploading results from different streams"""
     config = Config(
         url=url,
         token=token,
         configuration_id=configuration_id,
         testrun_id=testrun_id,
+        testrun_tags=parse_testrun_tags(testruntags),
+        testrun_links=parse_testrun_links(testrunlinks),
         separator=separator,
         namespace=namespace,
         classname=classname,
@@ -102,6 +118,8 @@ def upload_results(url, token, configuration_id, testrun_id, separator, namespac
 @click.option("-ci", "--configuration-id", type=str, envvar='TMS_CONFIGURATION_ID', required=True, help="Set configuration id (15dbb164-c1aa-4cbf-830c-8c01ae14f4fb)", callback=validate_uuid)
 @click.option("-ti", "--testrun-id", type=str, envvar='TMS_TEST_RUN_ID', help="Set test run id (3802f329-190c-4617-8bb0-2c3696abeb8f)", default=None, callback=validate_uuid)
 @click.option("-tn", "--testrun-name", type=str, envvar='TMS_TEST_RUN_NAME', help="Set test run name (TestRun01)", default=None)
+@click.option("-trt", "--testruntags", type=str, envvar='TMS_TEST_RUN_TAGS', default=None, help=_TESTRUN_TAGS_HELP)
+@click.option("-trl", "--testrunlinks", type=str, envvar='TMS_TEST_RUN_LINKS', default=None, help=_TESTRUN_LINKS_HELP)
 @click.option("-s", "--separator", type=str, help="Separate the classname value in the results into namespace and classname (.)", default=None)
 @click.option("-ns", "--namespace", type=str, help="Set namespace (NameSpace01)", default=None)
 @click.option("-cn", "--classname", type=str, help="Set classname (ClassName01)", default=None)
@@ -110,7 +128,7 @@ def upload_results(url, token, configuration_id, testrun_id, separator, namespac
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
-def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, separator, namespace, classname, results, debug,
+def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, testruntags, testrunlinks, separator, namespace, classname, results, debug,
                    attachments, disable_cert_validation, ignore_flaky_failure):
     """Uploading the first test results"""
     if testrun_id is not None and testrun_name is not None:
@@ -123,6 +141,8 @@ def import_results(url, token, project_id, configuration_id, testrun_id, testrun
         configuration_id=configuration_id,
         testrun_id=testrun_id,
         testrun_name=testrun_name,
+        testrun_tags=parse_testrun_tags(testruntags),
+        testrun_links=parse_testrun_links(testrunlinks),
         separator=separator,
         namespace=namespace,
         classname=classname,
@@ -148,17 +168,21 @@ def testrun():
 @click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
 @click.option("-pi", "--project-id", type=str, envvar='TMS_PROJECT_ID', required=True, help="Set project id (5236eb3f-7c05-46f9-a609-dc0278896464)", callback=validate_uuid)
 @click.option("-tn", "--testrun-name", type=str, envvar='TMS_TEST_RUN_NAME', help="Set test run name (TestRun01)", default=None)
+@click.option("-trt", "--testruntags", type=str, envvar='TMS_TEST_RUN_TAGS', default=None, help=_TESTRUN_TAGS_HELP)
+@click.option("-trl", "--testrunlinks", type=str, envvar='TMS_TEST_RUN_LINKS', default=None, help=_TESTRUN_LINKS_HELP)
 @click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
 @click.option("-a", "--attachments", multiple=True, type=list, help="Path to attachments for test run (multiple)", default=[], cls=ExtraArgsForOption)
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
-def create_test_run(url, token, project_id, testrun_name, output, debug, attachments, disable_cert_validation):
+def create_test_run(url, token, project_id, testrun_name, testruntags, testrunlinks, output, debug, attachments, disable_cert_validation):
     """Creating a new test run"""
     config = Config(
         url=url,
         token=token,
         project_id=project_id,
         testrun_name=testrun_name,
+        testrun_tags=parse_testrun_tags(testruntags),
+        testrun_links=parse_testrun_links(testrunlinks),
         is_debug=debug,
         output=output,
         paths_to_attachments=list(chain.from_iterable(attachments)),
