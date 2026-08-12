@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 import typing
 
+from .testrun_link import TestRunLink
+
 
 @dataclass
 class Config:
@@ -15,6 +17,8 @@ class Config:
     configuration_ids: typing.Optional[list[str]] = None
     testrun_id: typing.Optional[str] = None
     testrun_name: typing.Optional[str] = None
+    testrun_tags: typing.Optional[list[str]] = None
+    testrun_links: typing.Optional[list[TestRunLink]] = None
     separator: typing.Optional[str] = None
     namespace: typing.Optional[str] = None
     classname: typing.Optional[str] = None
