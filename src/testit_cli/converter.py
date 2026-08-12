@@ -137,7 +137,8 @@ class Converter:
             description=test_run_model.description,
             launch_source=test_run_model.launch_source,
             attachments=cls.attachment_models_to_attachment_put_models(test_run_model.attachments),
-            links=cls.link_models_to_link_put_models(test_run_model.links)
+            links=cls.link_models_to_link_put_models(test_run_model.links),
+            tags=list(test_run_model.tags) if test_run_model.tags else [],
         )
 
     @classmethod
@@ -199,5 +200,6 @@ class Converter:
             description=test_run.description,
             launch_source=test_run.launch_source,
             attachments=test_run.attachments,
-            links=test_run.links
+            links=test_run.links,
+            tags=test_run.tags,
         )
