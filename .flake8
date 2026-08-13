@@ -1,3 +1,22 @@
 [flake8]
 max-line-length = 240
 max-complexity = 8
+import-order-style = pep8
+application-import-names = adapters_api,testit_cli
+# OpenAPI-generated client; do not lint.
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    src/testit_cli/adapters_api
+per-file-ignores =
+    src/testit_cli/models/testrun.py:A003,VNE003
+    src/testit_cli/parser.py:VNE002
+
+[isort]
+profile = black
+line_length = 240
+known_first_party = adapters_api,testit_cli
+skip = src/testit_cli/adapters_api
+src_paths = src

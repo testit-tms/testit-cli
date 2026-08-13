@@ -1,10 +1,10 @@
-from .autotests_filter import AutotestsFilter
-from .logger import Logger
 from .apiclient import ApiClient
+from .autotests_filter import AutotestsFilter
 from .importer import Importer
+from .logger import Logger
+from .models.config import Config
 from .parser import Parser
 from .service import Service
-from .models.config import Config
 
 
 class ServiceFactory:

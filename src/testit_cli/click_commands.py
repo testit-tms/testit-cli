@@ -1,11 +1,11 @@
-import click
-
 from itertools import chain
+
+import click
 
 from .models.config import Config
 from .service_factory import ServiceFactory
 from .testrun_metadata import parse_testrun_links, parse_testrun_tags
-from .validation import validate_uuid, validate_url
+from .validation import validate_url, validate_uuid
 
 
 @click.group()
