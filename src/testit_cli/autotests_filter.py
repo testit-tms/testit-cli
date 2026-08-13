@@ -1,9 +1,8 @@
 import hashlib
 
-from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
-from testit_api_client.model.api_v2_test_results_search_post_request import ApiV2TestResultsSearchPostRequest
-from testit_api_client.model.auto_test_api_result import AutoTestApiResult
-
+from adapters_api.model.adapters_auto_tests_search_post_request import AdaptersAutoTestsSearchPostRequest
+from adapters_api.model.adapters_test_results_search_post_request import AdaptersTestResultsSearchPostRequest
+from adapters_api.model.auto_test_api_result import AutoTestApiResult
 from .apiclient import ApiClient
 from .converter import Converter
 from .filter_factory import FilterFactory
@@ -17,7 +16,7 @@ class AutotestsFilter:
 
     def create_filter(self):
         """Function returns str of filter by autotests for test Framework run command."""
-        test_results_search_post_request: ApiV2TestResultsSearchPostRequest = (
+        test_results_search_post_request: AdaptersTestResultsSearchPostRequest = (
             Converter.testrun_id_and_configuration_id_and_in_progress_outcome_to_test_results_search_post_request(
                 self.__config.testrun_id,
                 self.__config.configuration_id))
@@ -29,9 +28,9 @@ class AutotestsFilter:
 
             raise Exception(exception)
 
-        autotest_ids: list[int] = Converter.test_result_short_get_models_to_autotest_ids(test_results)
-        autotests_search_post_request: ApiV2AutoTestsSearchPostRequest = (
-            Converter.autotest_ids_to_autotests_search_post_request(autotest_ids))
+        external_ids: list[str] = Converter.test_result_short_models_to_autotest_external_ids(test_results)
+        autotests_search_post_request: AdaptersAutoTestsSearchPostRequest = (
+            Converter.external_ids_to_autotests_search_post_request(external_ids))
         autotests: list[AutoTestApiResult] = self.__api_client.get_autotests(autotests_search_post_request)
         external_keys: list[str] = Converter.autotest_models_to_external_keys(autotests)
 

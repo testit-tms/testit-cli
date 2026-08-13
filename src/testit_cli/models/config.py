@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
 import typing
+from dataclasses import dataclass, field
 
 from .testrun_link import TestRunLink
 

@@ -2,17 +2,17 @@ import logging
 import typing
 
 from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
-from testit_api_client.model.attachment_put_model import AttachmentPutModel
 
+from adapters_api.model.attachment_put_model import AttachmentPutModel
+from .apiclient import ApiClient
 from .autotests_filter import AutotestsFilter
 from .converter import Converter
-from .models.config import Config
-from .models.testrun import TestRun
-from .parser import Parser
-from .apiclient import ApiClient
 from .dir_worker import DirWorker
 from .file_worker import FileWorker
 from .importer import Importer
+from .models.config import Config
+from .models.testrun import TestRun
+from .parser import Parser
 from .testrun_metadata import merge_links, merge_tags, to_create_link_models, to_link_put_models
 
 
