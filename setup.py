@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "2.10.2"
+VERSION = "2.10.3"
 
 ADAPTERS_ROOT = "src/testit_cli/adapters_api"
 ADAPTERS_PACKAGES = ["adapters_api"] + [
@@ -38,7 +38,7 @@ setup(
         '': 'src',
         'adapters_api': ADAPTERS_ROOT,
     },
-    install_requires=['testit-api-client==7.5.12', 'validators', 'tqdm', 'click~=8.0.4'],
+    install_requires=['validators', 'tqdm', 'click~=8.0.4', 'urllib3>=2.6.0', 'python-dateutil'],
     entry_points={
         'console_scripts': [
             'testit = testit_cli.__main__:console_main'

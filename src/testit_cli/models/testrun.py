@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
-from testit_api_client.model.link_put_model import LinkPutModel
+from adapters_api.model.assign_attachment_api_model import AssignAttachmentApiModel
+from adapters_api.model.update_link_api_model import UpdateLinkApiModel
 
 
 @dataclass
@@ -14,5 +14,5 @@ class TestRun:
     description: str
     launch_source: str
     attachments: List[AssignAttachmentApiModel]
-    links: List[LinkPutModel]
+    links: List[UpdateLinkApiModel]
     tags: List[str] = field(default_factory=list)

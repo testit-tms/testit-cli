@@ -3,15 +3,6 @@ import logging
 import os
 import typing
 
-from testit_api_client import ApiClient as TmsClient
-from testit_api_client import Configuration as V2Configuration
-from testit_api_client.apis import TestRunsApi as V2TestRunsApi
-from testit_api_client.models import (
-    CreateEmptyRequest,
-    TestRunV2ApiResult,
-    UpdateEmptyRequest,
-)
-
 from adapters_api import ApiClient as AdaptersHttpClient
 from adapters_api import Configuration as AdaptersConfiguration
 from adapters_api.apis import (
@@ -31,6 +22,8 @@ from adapters_api.models import (
     AdaptersProjectsPostRequest,
     AdaptersTestResultsSearchPostRequest,
     AdaptersTestRunsIdRerunsPostRequest,
+    AdaptersTestRunsPostRequest,
+    AdaptersTestRunsPutRequest,
     AttachmentModel,
     AttachmentPutModel,
     AutoTestApiResult,
@@ -41,6 +34,7 @@ from adapters_api.models import (
     ManualRerunSelectTestResultsApiModelFilter,
     ManualRerunTestResultApiModelTestResultIds,
     TestResultShortResponse,
+    TestRunApiResult,
     WorkflowApiResult,
 )
 from .converter import Converter
@@ -50,19 +44,10 @@ from .models.testrun import TestRun
 
 
 class ApiClient:
-    """Class representing an api client (hybrid: v2 test-run CRUD + adapters elsewhere)."""
+    """Class representing an api client (adapters API only)."""
 
     def __init__(self, url: str, token: str, disable_cert_validation: bool):
         auth_header = "PrivateToken " + token
-
-        v2_config = V2Configuration(host=url)
-        v2_config.verify_ssl = not disable_cert_validation
-        v2_client = TmsClient(
-            configuration=v2_config,
-            header_name="Authorization",
-            header_value=auth_header,
-        )
-        self.__v2_test_run_api = V2TestRunsApi(api_client=v2_client)
 
         adapters_config = AdaptersConfiguration(host=url)
         adapters_config.verify_ssl = not disable_cert_validation
@@ -91,12 +76,14 @@ class ApiClient:
             create_kwargs["tags"] = tags
         if links:
             create_kwargs["links"] = links
-        model = CreateEmptyRequest(**create_kwargs)
+        model = AdaptersTestRunsPostRequest(**create_kwargs)
         model = HtmlEscapeUtils.escape_html_in_object(model)
         logging.debug(f"Creating test run with model: {model}")
 
-        test_run: TestRunV2ApiResult = with_http_retries(
-            lambda: self.__v2_test_run_api.create_empty(create_empty_request=model),
+        test_run: TestRunApiResult = with_http_retries(
+            lambda: self.__test_run_api.adapters_test_runs_post(
+                adapters_test_runs_post_request=model
+            ),
             label="Create test run",
         )
 
@@ -110,7 +97,7 @@ class ApiClient:
             )
         logging.debug(f"Test run created: {test_run}")
 
-        return Converter.test_run_v2_get_model_to_test_run(test_run)
+        return Converter.test_run_api_result_to_test_run(test_run)
 
     def rerun_test_run(self, test_run_id: str,
                        configuration_ids: list[str] = None,
@@ -167,11 +154,11 @@ class ApiClient:
 
     def update_test_run(self, test_run: TestRun) -> None:
         """Function updates test run."""
-        model: UpdateEmptyRequest = Converter.test_run_to_update_empty_request(test_run)
+        model: AdaptersTestRunsPutRequest = Converter.test_run_to_update_request(test_run)
         model = HtmlEscapeUtils.escape_html_in_object(model)
         logging.debug(f"Updating test run with model: {model}")
 
-        self.__v2_test_run_api.update_empty(update_empty_request=model)
+        self.__test_run_api.adapters_test_runs_put(adapters_test_runs_put_request=model)
 
         logging.info(f'Updated testrun (ID: {test_run.id})')
 
@@ -189,10 +176,10 @@ class ApiClient:
         """Function gets test run and returns test run."""
         logging.debug(f"Getting test run {test_run_id}")
 
-        test_run: TestRunV2ApiResult = self.__v2_test_run_api.get_test_run_by_id(test_run_id)
+        test_run: TestRunApiResult = self.__test_run_api.adapters_test_runs_id_get(test_run_id)
         if test_run is not None:
             logging.debug(f"Got testrun (ID: {test_run_id})")
-            return Converter.test_run_v2_get_model_to_test_run(test_run)
+            return Converter.test_run_api_result_to_test_run(test_run)
 
         logging.error(f"Test run {test_run_id} not found!")
         raise Exception(f"Test run {test_run_id} not found!")

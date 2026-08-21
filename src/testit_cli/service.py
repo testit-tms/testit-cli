@@ -1,8 +1,7 @@
 import logging
 import typing
 
-from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
-
+from adapters_api.model.assign_attachment_api_model import AssignAttachmentApiModel
 from adapters_api.model.attachment_put_model import AttachmentPutModel
 from .apiclient import ApiClient
 from .autotests_filter import AutotestsFilter
@@ -13,7 +12,7 @@ from .importer import Importer
 from .models.config import Config
 from .models.testrun import TestRun
 from .parser import Parser
-from .testrun_metadata import merge_links, merge_tags, to_create_link_models, to_link_put_models
+from .testrun_metadata import merge_links, merge_tags, to_create_link_models, to_update_link_models
 
 
 class Service:
@@ -82,7 +81,7 @@ class Service:
         test_run.tags = merge_tags(test_run.tags, self.__config.testrun_tags)
         test_run.links = merge_links(
             test_run.links,
-            to_link_put_models(self.__config.testrun_links),
+            to_update_link_models(self.__config.testrun_links),
         )
 
     def __apply_testrun_tags_and_links(self, test_run: TestRun) -> TestRun:

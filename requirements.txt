@@ -18,6 +18,3 @@ black>=22.8.0
 
 click~=8.0.4
 pytest
-
-# remove it, setup automatically at setup.py
-#testit-api-client==7.5.3
