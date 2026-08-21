@@ -3,10 +3,9 @@ import json
 import logging
 from typing import List, Optional
 
-from testit_api_client.model.create_link_api_model import CreateLinkApiModel
-from testit_api_client.model.link_put_model import LinkPutModel
-from testit_api_client.model.link_type import LinkType
-
+from adapters_api.model.create_link_api_model import CreateLinkApiModel
+from adapters_api.model.link_type import LinkType
+from adapters_api.model.update_link_api_model import UpdateLinkApiModel
 from .models.testrun_link import TestRunLink
 
 LINK_TYPES = ("Related", "BlockedBy", "Defect", "Issue", "Requirement", "Repository")
@@ -87,22 +86,20 @@ def to_create_link_models(links: Optional[List[TestRunLink]]) -> Optional[List[C
             title=link.title,
             description=link.description,
             type=_to_link_type(link.link_type),
-            has_info=False,
         )
         for link in links
     ]
 
 
-def to_link_put_models(links: Optional[List[TestRunLink]]) -> List[LinkPutModel]:
+def to_update_link_models(links: Optional[List[TestRunLink]]) -> List[UpdateLinkApiModel]:
     if not links:
         return []
     return [
-        LinkPutModel(
+        UpdateLinkApiModel(
             url=link.url,
             title=link.title,
             description=link.description,
             type=_to_link_type(link.link_type),
-            has_info=False,
         )
         for link in links
     ]
@@ -119,9 +116,9 @@ def merge_tags(existing: Optional[List[str]], incoming: Optional[List[str]]) -> 
 
 
 def merge_links(
-    existing: Optional[List[LinkPutModel]],
-    incoming: Optional[List[LinkPutModel]],
-) -> List[LinkPutModel]:
+    existing: Optional[List[UpdateLinkApiModel]],
+    incoming: Optional[List[UpdateLinkApiModel]],
+) -> List[UpdateLinkApiModel]:
     result = list(existing or [])
     seen = {link.url for link in result}
     for link in incoming or []:

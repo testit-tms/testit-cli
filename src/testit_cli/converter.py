@@ -1,24 +1,23 @@
 import typing
 
-from testit_api_client.model.assign_attachment_api_model import AssignAttachmentApiModel
-from testit_api_client.model.attachment_api_result import AttachmentApiResult
-from testit_api_client.model.link_api_result import LinkApiResult
-from testit_api_client.model.link_put_model import LinkPutModel
-from testit_api_client.model.test_run_v2_api_result import TestRunV2ApiResult
-from testit_api_client.model.update_empty_request import UpdateEmptyRequest
-
 from adapters_api.model.adapters_auto_tests_post_request import AdaptersAutoTestsPostRequest
 from adapters_api.model.adapters_auto_tests_put_request import AdaptersAutoTestsPutRequest
 from adapters_api.model.adapters_auto_tests_search_post_request import AdaptersAutoTestsSearchPostRequest
 from adapters_api.model.adapters_test_results_search_post_request import AdaptersTestResultsSearchPostRequest
+from adapters_api.model.adapters_test_runs_put_request import AdaptersTestRunsPutRequest
+from adapters_api.model.assign_attachment_api_model import AssignAttachmentApiModel
+from adapters_api.model.attachment_api_result import AttachmentApiResult
 from adapters_api.model.attachment_put_model import AttachmentPutModel
 from adapters_api.model.auto_test_api_result import AutoTestApiResult
 from adapters_api.model.auto_test_results_for_test_run_model import AutoTestResultsForTestRunModel
 from adapters_api.model.auto_test_search_api_model_filter import AutoTestSearchApiModelFilter
 from adapters_api.model.auto_test_search_api_model_includes import AutoTestSearchApiModelIncludes
+from adapters_api.model.link_api_result import LinkApiResult
 from adapters_api.model.test_result_short_response import TestResultShortResponse
+from adapters_api.model.test_run_api_result import TestRunApiResult
 from adapters_api.model.test_status_api_type import TestStatusApiType
 from adapters_api.model.test_status_type import TestStatusType
+from adapters_api.model.update_link_api_model import UpdateLinkApiModel
 from .models.testcase import TestCase
 from .models.testrun import TestRun
 
@@ -126,16 +125,18 @@ class Converter:
         return model
 
     @classmethod
-    def test_run_v2_get_model_to_test_run(cls, test_run_model: TestRunV2ApiResult) -> TestRun:
+    def test_run_api_result_to_test_run(cls, test_run_model: TestRunApiResult) -> TestRun:
+        state = test_run_model.state_name
+        state_value = getattr(state, "value", None) or str(state)
         return TestRun(
             id=test_run_model.id,
             project_id=test_run_model.project_id,
-            state=test_run_model.state_name.value,
+            state=state_value,
             name=test_run_model.name,
-            description=test_run_model.description,
-            launch_source=test_run_model.launch_source,
+            description=test_run_model.description or "",
+            launch_source=test_run_model.launch_source or "",
             attachments=cls.attachment_models_to_attachment_put_models(test_run_model.attachments),
-            links=cls.link_models_to_link_put_models(test_run_model.links),
+            links=cls.link_models_to_update_link_models(test_run_model.links),
             tags=list(test_run_model.tags) if test_run_model.tags else [],
         )
 
@@ -145,7 +146,7 @@ class Converter:
             attachment_models: typing.List[AttachmentApiResult]) -> typing.List[AssignAttachmentApiModel]:
         attachment_put_models = []
 
-        for attachment_model in attachment_models:
+        for attachment_model in attachment_models or []:
             attachment_put_models.append(
                 cls.attachment_model_to_attachment_put_model(attachment_model))
 
@@ -165,31 +166,30 @@ class Converter:
         return list(map(lambda x: Converter.attachment_put_model_to_assign_attachment(x), attachment_models))
 
     @classmethod
-    def link_models_to_link_put_models(
+    def link_models_to_update_link_models(
             cls,
-            link_models: typing.List[LinkApiResult]) -> typing.List[LinkPutModel]:
+            link_models: typing.List[LinkApiResult]) -> typing.List[UpdateLinkApiModel]:
         link_put_models = []
 
-        for link_model in link_models:
+        for link_model in link_models or []:
             link_put_models.append(
-                cls.link_model_to_link_put_model(link_model))
+                cls.link_model_to_update_link_model(link_model))
 
         return link_put_models
 
     @staticmethod
-    def link_model_to_link_put_model(link_model: LinkApiResult) -> LinkPutModel:
-        return LinkPutModel(
+    def link_model_to_update_link_model(link_model: LinkApiResult) -> UpdateLinkApiModel:
+        return UpdateLinkApiModel(
             url=link_model.url,
             id=link_model.id,
             title=link_model.title,
             description=link_model.description,
             type=link_model.type,
-            has_info=link_model.has_info
         )
 
     @staticmethod
-    def test_run_to_update_empty_request(test_run: TestRun) -> UpdateEmptyRequest:
-        return UpdateEmptyRequest(
+    def test_run_to_update_request(test_run: TestRun) -> AdaptersTestRunsPutRequest:
+        return AdaptersTestRunsPutRequest(
             id=test_run.id,
             name=test_run.name,
             description=test_run.description,
