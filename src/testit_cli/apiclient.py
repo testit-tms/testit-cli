@@ -212,6 +212,7 @@ class ApiClient:
     def update_autotest(self, model: AdaptersAutoTestsPutRequest) -> None:
         """Function updates autotest"""
         try:
+            model.reset_layer = False
             escaped_model: AdaptersAutoTestsPutRequest = HtmlEscapeUtils.escape_html_in_object(model)
 
             logging.debug(f"Updating autotest {escaped_model}")

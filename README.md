@@ -111,3 +111,31 @@ Notes:
 - Test run tags/links are independent from autotest/result tags and links.
 - On an existing run, new tags/links are **merged** (existing values are kept; duplicates by tag name / link URL are skipped).
 - Empty or omitted values mean “do not change tags/links”.
+
+## Autotest layer (test pyramid)
+
+When importing XML results, CLI can set the **autotest** pyramid layer for every upserted autotest (create/update).  
+This is a **run-level default** for file-based import; adapters still read layer from test code annotations.
+
+| Intent | CLI | Env |
+|--------|-----|-----|
+| Default autotest layer | `--autotest-layer` / `-al` | `TMS_AUTOTEST_LAYER` |
+
+Supported commands: `results import`, `results upload`.
+
+Recommended values: `E2E`, `UI`, `API`, `Contract`, `Integration`, `Component`, `Unit`. Any other non-empty string is accepted.
+
+```bash
+export TMS_AUTOTEST_LAYER=API
+testit results import \
+  --url "$TMS_URL" \
+  --token "$TMS_TOKEN" \
+  --project-id "$TMS_PROJECT_ID" \
+  --configuration-id "$TMS_CONFIGURATION_ID" \
+  --results ./results
+```
+
+Behaviour (aligned with adapters API):
+
+- Layer set → send `layer: { name, source: Run }` on create/update.
+- Layer not set → do not send `layer`; on update always send `resetLayer: false`.

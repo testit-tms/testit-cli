@@ -1,3 +1,4 @@
+import typing
 from itertools import chain
 
 import click
@@ -71,6 +72,16 @@ _TESTRUN_LINKS_HELP = (
     '([{"url":"https://ci.example/jobs/1","title":"CI Job","type":"Related"}]). '
     "Types: Related, BlockedBy, Defect, Issue, Requirement, Repository"
 )
+_AUTOTEST_LAYER_HELP = (
+    "Default autotest pyramid layer for all imported tests "
+    "(E2E, UI, API, Contract, Integration, Component, Unit, or any string)"
+)
+
+
+def _parse_autotest_layer(raw: typing.Optional[str]) -> typing.Optional[str]:
+    if raw is None or not str(raw).strip():
+        return None
+    return str(raw).strip()
 
 
 @results.command("upload")
@@ -88,7 +99,8 @@ _TESTRUN_LINKS_HELP = (
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
-def upload_results(url, token, configuration_id, testrun_id, testruntags, testrunlinks, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
+@click.option("-al", "--autotest-layer", type=str, envvar='TMS_AUTOTEST_LAYER', default=None, help=_AUTOTEST_LAYER_HELP)
+def upload_results(url, token, configuration_id, testrun_id, testruntags, testrunlinks, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure, autotest_layer):
     """Uploading results from different streams"""
     config = Config(
         url=url,
@@ -105,6 +117,7 @@ def upload_results(url, token, configuration_id, testrun_id, testruntags, testru
         paths_to_attachments=list(chain.from_iterable(attachments)),
         disable_cert_validation=disable_cert_validation,
         ignore_flaky_failure=ignore_flaky_failure,
+        autotest_layer=_parse_autotest_layer(autotest_layer),
     )
     service = ServiceFactory().get(config)
 
@@ -128,8 +141,9 @@ def upload_results(url, token, configuration_id, testrun_id, testruntags, testru
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
+@click.option("-al", "--autotest-layer", type=str, envvar='TMS_AUTOTEST_LAYER', default=None, help=_AUTOTEST_LAYER_HELP)
 def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, testruntags, testrunlinks, separator, namespace, classname, results, debug,
-                   attachments, disable_cert_validation, ignore_flaky_failure):
+                   attachments, disable_cert_validation, ignore_flaky_failure, autotest_layer):
     """Uploading the first test results"""
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
@@ -151,6 +165,7 @@ def import_results(url, token, project_id, configuration_id, testrun_id, testrun
         paths_to_attachments=list(chain.from_iterable(attachments)),
         disable_cert_validation=disable_cert_validation,
         ignore_flaky_failure=ignore_flaky_failure,
+        autotest_layer=_parse_autotest_layer(autotest_layer),
     )
     service = ServiceFactory().get(config)
 
