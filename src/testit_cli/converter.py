@@ -9,9 +9,11 @@ from adapters_api.model.assign_attachment_api_model import AssignAttachmentApiMo
 from adapters_api.model.attachment_api_result import AttachmentApiResult
 from adapters_api.model.attachment_put_model import AttachmentPutModel
 from adapters_api.model.auto_test_api_result import AutoTestApiResult
+from adapters_api.model.auto_test_create_api_model_layer import AutoTestCreateApiModelLayer
 from adapters_api.model.auto_test_results_for_test_run_model import AutoTestResultsForTestRunModel
 from adapters_api.model.auto_test_search_api_model_filter import AutoTestSearchApiModelFilter
 from adapters_api.model.auto_test_search_api_model_includes import AutoTestSearchApiModelIncludes
+from adapters_api.model.layer_source import LayerSource
 from adapters_api.model.link_api_result import LinkApiResult
 from adapters_api.model.test_result_short_response import TestResultShortResponse
 from adapters_api.model.test_run_api_result import TestRunApiResult
@@ -23,6 +25,15 @@ from .models.testrun import TestRun
 
 
 class Converter:
+    @staticmethod
+    def layer_to_api_model(layer_name: typing.Optional[str]) -> typing.Optional[AutoTestCreateApiModelLayer]:
+        if layer_name is None or not str(layer_name).strip():
+            return None
+        return AutoTestCreateApiModelLayer(
+            name=str(layer_name).strip(),
+            source=LayerSource("Run"),
+        )
+
     @staticmethod
     def project_id_and_external_id_to_autotests_search_post_request(
             project_id: str, external_id: str) -> AdaptersAutoTestsSearchPostRequest:
@@ -85,26 +96,41 @@ class Converter:
 
     @staticmethod
     def test_result_to_create_autotest_request(
-            result: TestCase, external_id: str, project_id: str) -> AdaptersAutoTestsPostRequest:
-        return AdaptersAutoTestsPostRequest(
-            external_id=external_id,
-            project_id=project_id,
-            name=result.get_name(),
-            namespace=result.get_name_space(),
-            classname=result.get_class_name(),
-        )
+            result: TestCase,
+            external_id: str,
+            project_id: str,
+            layer: typing.Optional[str] = None) -> AdaptersAutoTestsPostRequest:
+        request_kwargs = {
+            "external_id": external_id,
+            "project_id": project_id,
+            "name": result.get_name(),
+            "namespace": result.get_name_space(),
+            "classname": result.get_class_name(),
+        }
+        api_layer = Converter.layer_to_api_model(layer)
+        if api_layer is not None:
+            request_kwargs["layer"] = api_layer
+        return AdaptersAutoTestsPostRequest(**request_kwargs)
 
     @staticmethod
     def test_result_to_update_autotest_request(
-            result: TestCase, external_id: str, project_id: str) -> AdaptersAutoTestsPutRequest:
-        return AdaptersAutoTestsPutRequest(
-            external_id=external_id,
-            project_id=project_id,
-            name=result.get_name(),
-            namespace=result.get_name_space(),
-            classname=result.get_class_name(),
-            is_flaky=result.get_is_flaky()
-        )
+            result: TestCase,
+            external_id: str,
+            project_id: str,
+            layer: typing.Optional[str] = None) -> AdaptersAutoTestsPutRequest:
+        request_kwargs = {
+            "external_id": external_id,
+            "project_id": project_id,
+            "name": result.get_name(),
+            "namespace": result.get_name_space(),
+            "classname": result.get_class_name(),
+            "is_flaky": result.get_is_flaky(),
+            "reset_layer": False,
+        }
+        api_layer = Converter.layer_to_api_model(layer)
+        if api_layer is not None:
+            request_kwargs["layer"] = api_layer
+        return AdaptersAutoTestsPutRequest(**request_kwargs)
 
     @staticmethod
     def test_result_to_testrun_result_post_model(

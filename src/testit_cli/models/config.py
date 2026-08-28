@@ -37,3 +37,4 @@ class Config:
     disable_cert_validation: bool = False
     framework: str = ""
     ignore_flaky_failure: bool = False
+    autotest_layer: typing.Optional[str] = None

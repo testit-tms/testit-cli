@@ -34,7 +34,7 @@ class Importer:
             if not autotests:
                 self.__api_client.create_autotest(
                     Converter.test_result_to_create_autotest_request(
-                        result, external_id, self.__config.project_id
+                        result, external_id, self.__config.project_id, self.__config.autotest_layer
                     )
                 )
             else:
@@ -42,7 +42,7 @@ class Importer:
 
                 self.__api_client.update_autotest(
                     Converter.test_result_to_update_autotest_request(
-                        result, external_id, self.__config.project_id
+                        result, external_id, self.__config.project_id, self.__config.autotest_layer
                     )
                 )
 

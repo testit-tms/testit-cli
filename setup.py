@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-VERSION = "2.10.3"
+VERSION = "2.11.0"
 
 ADAPTERS_ROOT = "src/testit_cli/adapters_api"
 ADAPTERS_PACKAGES = ["adapters_api"] + [
