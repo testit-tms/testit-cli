@@ -12,14 +12,16 @@ class FilterFactory:
             'robotframework': cls.__initialize_robotframework_filter,
             'behave': cls.__initialize_behave_filter,
             'nose': cls.__initialize_nose_filter,
-            'gradle-testng': cls.__initialize_gradle_testng_junit4_junit5_filter,
-            'gradle-junit4': cls.__initialize_gradle_testng_junit4_junit5_filter,
-            'gradle-junit5': cls.__initialize_gradle_testng_junit4_junit5_filter,
+            'gradle-testng': cls.__initialize_gradle_testng_junit4_junit5_junit6_filter,
+            'gradle-junit4': cls.__initialize_gradle_testng_junit4_junit5_junit6_filter,
+            'gradle-junit5': cls.__initialize_gradle_testng_junit4_junit5_junit6_filter,
+            'gradle-junit6': cls.__initialize_gradle_testng_junit4_junit5_junit6_filter,
             # 'gradle-jbehave': cls.__initialize_jbehave_filter,
             'gradle-cucumber': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
-            'maven-testng': cls.__initialize_maven_testng_junit4_junit5_filter,
-            'maven-junit4': cls.__initialize_maven_testng_junit4_junit5_filter,
-            'maven-junit5': cls.__initialize_maven_testng_junit4_junit5_filter,
+            'maven-testng': cls.__initialize_maven_testng_junit4_junit5_junit6_filter,
+            'maven-junit4': cls.__initialize_maven_testng_junit4_junit5_junit6_filter,
+            'maven-junit5': cls.__initialize_maven_testng_junit4_junit5_junit6_filter,
+            'maven-junit6': cls.__initialize_maven_testng_junit4_junit5_junit6_filter,
             # 'maven-jbehave': cls.__initialize_jbehave_filter,
             'maven-cucumber': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
             'cucumberjs': cls.__initialize_cucumber_cucumberjs_jest_golang_filter,
@@ -65,8 +67,8 @@ class FilterFactory:
         return ' '.join(external_keys)
 
     @staticmethod
-    def __initialize_gradle_testng_junit4_junit5_filter(external_keys: typing.List[str]) -> str:
-        """Initialize filter for gradle TestNG or JUnit4 or JUnit5 run with gradle"""
+    def __initialize_gradle_testng_junit4_junit5_junit6_filter(external_keys: typing.List[str]) -> str:
+        """Initialize filter for gradle TestNG or JUnit4 or JUnit5 or JUnit6 run with gradle"""
         autotest_keys = []
 
         for external_key in external_keys:
@@ -90,8 +92,8 @@ class FilterFactory:
     #     return '+' + ' '.join(external_keys)
 
     @staticmethod
-    def __initialize_maven_testng_junit4_junit5_filter(external_keys: typing.List[str]) -> str:
-        """Initialize filter for TestNG or JUnit4 or JUnit5 run with maven"""
+    def __initialize_maven_testng_junit4_junit5_junit6_filter(external_keys: typing.List[str]) -> str:
+        """Initialize filter for TestNG or JUnit4 or JUnit5 or JUnit6 run with maven"""
         autotest_keys = []
 
         for external_key in external_keys:
