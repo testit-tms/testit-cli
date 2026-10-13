@@ -282,7 +282,7 @@ def rerun_test_run(url, token, testrun_id, configuration_id, status_code, failur
 
 
 PYTHON_FRAMEWORKS = ['pytest', 'robotframework', 'behave', 'nose']
-JAVA_FRAMEWORKS = ['gradle-testng', 'gradle-junit5', 'gradle-junit4', 'gradle-cucumber', 'maven-testng', 'maven-junit5', 'maven-junit4', 'maven-cucumber']
+JAVA_FRAMEWORKS = ['gradle-testng', 'gradle-junit6', 'gradle-junit5', 'gradle-junit4', 'gradle-cucumber', 'maven-testng', 'maven-junit6', 'maven-junit5', 'maven-junit4', 'maven-cucumber']
 KOTLIN_FRAMEWORKS = ['kotest']
 JAVASCRIPT_FRAMEWORKS = ['cucumberjs', 'codeceptjs', 'jest', 'mocha', 'playwright', 'testcafe', 'cypress']
 DOTNET_FRAMEWORKS = ['mstest', 'nunit', 'xunit', 'specflow']
