@@ -13,6 +13,7 @@ from .models.config import Config
 from .models.testrun import TestRun
 from .parser import Parser
 from .testrun_metadata import merge_links, merge_tags, to_create_link_models, to_update_link_models
+from .v2_client import V2Client
 
 
 class Service:
@@ -22,13 +23,15 @@ class Service:
         api_client: ApiClient,
         parser: Parser,
         importer: Importer,
-        autotests_filter: AutotestsFilter
+        autotests_filter: AutotestsFilter,
+        v2_client: typing.Optional[V2Client] = None,
     ):
         self.__config = config
         self.__api_client = api_client
         self.__parser = parser
         self.__importer = importer
         self.__autotests_filter = autotests_filter
+        self.__v2_client = v2_client
 
     def import_results(self):
         self.__upload_results()
@@ -42,6 +45,49 @@ class Service:
         self.__update_test_run_with_attachments(test_run)
 
         self.__write_to_output(test_run.id)
+
+    def launch_test_run(self) -> None:
+        if self.__v2_client is None:
+            raise RuntimeError("V2Client is required for testrun create launch")
+
+        if self.__config.test_plan_id:
+            work_item_ids = self.__v2_client.search_test_point_work_item_ids(
+                self.__config.test_plan_id,
+                self.__config.configuration_id,
+            )
+            if not work_item_ids:
+                raise ValueError(
+                    "No automated work items found for the given test plan and configuration"
+                )
+            test_run_id = self.__v2_client.create_run_by_work_items(
+                self.__config.project_id,
+                self.__config.test_plan_id,
+                self.__config.configuration_id,
+                work_item_ids,
+                name=self.__config.testrun_name,
+            )
+        else:
+            external_ids = self.__config.autotest_external_ids
+            if external_ids is None and self.__config.launch_tags:
+                external_ids = self.__v2_client.search_autotest_external_ids(
+                    self.__config.project_id,
+                    self.__config.launch_tags,
+                )
+            if not external_ids:
+                raise ValueError(
+                    "No autotest external IDs resolved for launch "
+                    "(empty search result or empty ids file)"
+                )
+            test_run_id = self.__v2_client.create_run_by_auto_tests(
+                self.__config.project_id,
+                self.__config.configuration_id,
+                external_ids,
+                name=self.__config.testrun_name,
+            )
+
+        print(test_run_id)
+        if self.__config.output:
+            self.__write_to_output(test_run_id)
 
     def rerun_test_run(self) -> None:
         self.__api_client.rerun_test_run(

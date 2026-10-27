@@ -38,3 +38,6 @@ class Config:
     framework: str = ""
     ignore_flaky_failure: bool = False
     autotest_layer: typing.Optional[str] = None
+    test_plan_id: typing.Optional[str] = None
+    launch_tags: typing.Optional[list[str]] = None
+    autotest_external_ids: typing.Optional[list[str]] = None
