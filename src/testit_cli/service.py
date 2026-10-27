@@ -1,6 +1,7 @@
 import logging
 import typing
 
+import click
 from adapters_api.model.assign_attachment_api_model import AssignAttachmentApiModel
 from adapters_api.model.attachment_put_model import AttachmentPutModel
 from .apiclient import ApiClient
@@ -85,7 +86,7 @@ class Service:
                 name=self.__config.testrun_name,
             )
 
-        print(test_run_id)
+        click.echo(test_run_id)
         if self.__config.output:
             self.__write_to_output(test_run_id)
 
