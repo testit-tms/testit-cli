@@ -31,6 +31,68 @@ You can see more information in [official documentation](https://docs.testit.sof
 2. Starting with 5.2, we have added a TMS postscript, which means that the utility is compatible with a specific enterprise version.
 3. If you are in doubt about which version to use, check with the support staff. support@yoonion.ru
 
+## Launch a filled test run (`testrun create launch`)
+
+Unlike `testrun create` (empty run), `testrun create launch` creates a **filled** test run.
+
+Provide **exactly one** source:
+
+| Source            | Flag                                   | Behaviour                                         |
+|-------------------|----------------------------------------|---------------------------------------------------|
+| Test plan         | `--test-plan-id` / `-tpi`              | Search automated test points in the TMS test plan |
+| Tags              | `--filter tags=smoke,nightly`          | Search autotests in TMS                           |
+| External IDs file | `--autotest-external-ids-file` / `-af` | One external ID per line in file                  |
+
+Required: `--url`, `--token`, `--project-id`, `--configuration-id`. Optional: `--testrun-name`, `--output` (also write ID to a file).
+
+The command prints `testRunId` to **stdout** (suitable for `export TMS_TEST_RUN_ID=$(...)`).
+
+```bash
+export TMS_TEST_RUN_ID=$(testit testrun create launch \
+  --url "$TMS_URL" \
+  --token "$TMS_TOKEN" \
+  --project-id "$TMS_PROJECT_ID" \
+  --configuration-id "$TMS_CONFIGURATION_ID" \
+  --filter tags=smoke \
+  --testrun-name "CI smoke")
+```
+
+From a test plan:
+
+```bash
+testit testrun create launch \
+  -u "$TMS_URL" -t "$TMS_TOKEN" \
+  -pi "$TMS_PROJECT_ID" -ci "$TMS_CONFIGURATION_ID" \
+  --test-plan-id "$TMS_TEST_PLAN_ID" \
+  -o ./testrun.id
+```
+
+### Autotest external IDs file
+
+`--autotest-external-ids-file` / `-af` expects a plain-text file of **autotest external IDs** (the same values as in TMS / `autoTestExternalIds`, not internal UUIDs or global IDs):
+
+- one external ID per line;
+- empty lines are ignored;
+- lines starting with `#` are comments;
+- duplicate IDs are ignored.
+
+Example `autotest-external-ids.txt`:
+
+```text
+# smoke suite
+login-test-ext-id
+checkout-test-ext-id
+
+payment-test-ext-id
+```
+
+```bash
+testit testrun create launch \
+  -u "$TMS_URL" -t "$TMS_TOKEN" \
+  -pi "$TMS_PROJECT_ID" -ci "$TMS_CONFIGURATION_ID" \
+  -af ./autotest-external-ids.txt
+```
+
 ## Test run tags and links
 
 You can attach **test run** tags and links (for example a CI job URL) via CLI flags or environment variables.  

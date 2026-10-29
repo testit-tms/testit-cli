@@ -1,3 +1,19 @@
+[2.12.0] 27.10.2026
+
+* add `testrun create launch` — create and fill a test run via public v2 API
+  (`--test-plan-id` | `--filter tags=...` | `--autotest-external-ids-file`), print `testRunId` to stdout
+* `testrun create` remains empty-run create; filled launch is nested as `create launch`
+
+```
+$ export TMS_TEST_RUN_ID=$(testit testrun create launch \
+  --url https://tms.testit.software \
+  --token "$TMS_TOKEN" \
+  --project-id "$TMS_PROJECT_ID" \
+  --configuration-id "$TMS_CONFIGURATION_ID" \
+  --filter tags=smoke,nightly \
+  --testrun-name "CI smoke")
+```
+
 [2.11.1] 13.10.2026
 
 * add `gradle-junit6` and `maven-junit6` frameworks to `autotests_filter` command

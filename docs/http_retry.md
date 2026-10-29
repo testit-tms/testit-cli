@@ -25,6 +25,8 @@ Any code path that uses `ApiClient.create_test_run`:
 - `testit testrun create`
 - import flow when a test run is auto-created (no `testrun_id`)
 
+Public v2 calls in `V2Client` (`testrun create launch` search + create) are also wrapped in `with_http_retries`.
+
 ## Extending to other API calls
 
 1. Add exception types to **`RETRYABLE`** in `http_retry.py` if needed.
