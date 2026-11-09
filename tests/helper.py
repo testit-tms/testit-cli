@@ -56,6 +56,18 @@ class Helper:
             (cls.get_command_autotests_filter_without_url_argument(), "--url"),
             (cls.get_command_project_create_without_name_argument(), "--name"),
             (cls.get_command_testrun_rerun_without_token_argument(), "--token"),
+            (
+                ["testrun", "create", "launch", "-t", cls.__TOKEN, "-pi", cls.__UUID, "-ci", cls.__UUID, "-f", "tags=smoke"],
+                "--url",
+            ),
+            (
+                ["testrun", "create", "launch", "-u", cls.__URL, "-t", cls.__TOKEN, "-ci", cls.__UUID, "-f", "tags=smoke"],
+                "--project-id",
+            ),
+            (
+                ["testrun", "create", "launch", "-u", cls.__URL, "-t", cls.__TOKEN, "-pi", cls.__UUID, "-f", "tags=smoke"],
+                "--configuration-id",
+            ),
         ]
 
     @classmethod
@@ -63,6 +75,7 @@ class Helper:
         return [
             (["run"], "run"),
             (["results", "run"], "run"),
+            (["testrun", "launch"], "launch"),
         ]
 
     @classmethod
@@ -84,6 +97,12 @@ class Helper:
                     "upload_attachments  Uploading attachments for the test run",
                 ),
             ),
+            (
+                ["testrun", "create", "--help"],
+                (
+                    "launch  Create and fill a test run (by plan, tags, or external IDs)",
+                ),
+            ),
         ]
 
     @classmethod
@@ -92,6 +111,18 @@ class Helper:
             (["autotests_filter", "--help"], "Creating filter by autotests for test frameworks"),
             (["project", "create", "--help"], "Creating a new project"),
             (["testrun", "rerun", "--help"], "Rerunning the test run"),
+            (["testrun", "create", "launch", "--help"], "Create and fill a test run (by plan, tags, or external IDs)"),
+        ]
+
+    @classmethod
+    def launch_minimal_argv(cls):
+        """Minimal argv for `testrun create launch` without a source option."""
+        return [
+            "testrun", "create", "launch",
+            "-u", cls.__URL,
+            "-t", cls.__TOKEN,
+            "-pi", cls.__UUID,
+            "-ci", cls.__UUID,
         ]
 
     @classmethod

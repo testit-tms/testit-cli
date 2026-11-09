@@ -2,10 +2,10 @@ import logging
 import typing
 from xml.dom import minidom
 
+from .file_worker import FileWorker
 from .models.config import Config
 from .models.status_type import StatusType
 from .models.testcase import TestCase
-from .file_worker import FileWorker
 
 
 class Parser:

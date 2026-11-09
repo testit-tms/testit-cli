@@ -1,5 +1,5 @@
-import typing
 import re
+import typing
 
 from .models.config import Config
 

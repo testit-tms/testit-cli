@@ -1,6 +1,16 @@
 from setuptools import find_packages, setup
 
 VERSION = "2.10.4.post600"
+
+ADAPTERS_ROOT = "src/testit_cli/adapters_api"
+ADAPTERS_PACKAGES = ["adapters_api"] + [
+    f"adapters_api.{pkg}" for pkg in find_packages(where=ADAPTERS_ROOT)
+]
+CLI_PACKAGES = [
+    pkg for pkg in find_packages(where="src")
+    if not pkg.startswith("testit_cli.adapters_api")
+]
+
 setup(
     name='testit-cli',
     version=VERSION,
@@ -23,9 +33,12 @@ setup(
         'Programming Language :: Python :: 3.12',
     ],
     py_modules=['testit_cli'],
-    packages=find_packages(where='src'),
-    package_dir={'': 'src'},
-    install_requires=['testit-api-client==7.6.2.post600', 'validators', 'tqdm', 'click~=8.0.4'],
+    packages=CLI_PACKAGES + ADAPTERS_PACKAGES,
+    package_dir={
+        '': 'src',
+        'adapters_api': ADAPTERS_ROOT,
+    },
+    install_requires=['validators', 'tqdm', 'click~=8.0.4', 'urllib3>=2.6.0', 'python-dateutil'],
     entry_points={
         'console_scripts': [
             'testit = testit_cli.__main__:console_main'

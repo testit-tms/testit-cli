@@ -1,8 +1,8 @@
 from unittest.mock import Mock
 
 import pytest
-from testit_api_client.model.link_put_model import LinkPutModel
-from testit_api_client.model.link_type import LinkType
+from adapters_api.model.link_type import LinkType
+from adapters_api.model.update_link_api_model import UpdateLinkApiModel
 
 from src.testit_cli.models.testrun import TestRun
 from src.testit_cli.models.testrun_link import TestRunLink
@@ -65,10 +65,10 @@ def test_parse_testrun_links_invalid(raw):
 def test_merge_tags_and_links_dedupe():
     assert merge_tags(["a"], ["a", "b"]) == ["a", "b"]
     related = LinkType("Related")
-    existing = [LinkPutModel(url="https://a", type=related, has_info=False)]
+    existing = [UpdateLinkApiModel(url="https://a", type=related)]
     incoming = [
-        LinkPutModel(url="https://a", type=related, has_info=False),
-        LinkPutModel(url="https://b", type=related, has_info=False),
+        UpdateLinkApiModel(url="https://a", type=related),
+        UpdateLinkApiModel(url="https://b", type=related),
     ]
     merged = merge_links(existing, incoming)
     assert [link.url for link in merged] == ["https://a", "https://b"]
@@ -125,7 +125,7 @@ def test_upload_results_merges_tags_and_links_early():
         description="",
         launch_source="",
         attachments=[],
-        links=[LinkPutModel(url="https://existing", type=related, has_info=False)],
+        links=[UpdateLinkApiModel(url="https://existing", type=related)],
         tags=["ui"],
     )
     api_client = Mock()

@@ -1,11 +1,13 @@
-import click
-
+import typing
 from itertools import chain
 
+import click
+
+from .launch_filter import LaunchFilterError, parse_launch_filter, read_autotest_external_ids_file
 from .models.config import Config
 from .service_factory import ServiceFactory
 from .testrun_metadata import parse_testrun_links, parse_testrun_tags
-from .validation import validate_uuid, validate_url
+from .validation import validate_url, validate_url_optional, validate_uuid
 
 
 @click.group()
@@ -71,6 +73,16 @@ _TESTRUN_LINKS_HELP = (
     '([{"url":"https://ci.example/jobs/1","title":"CI Job","type":"Related"}]). '
     "Types: Related, BlockedBy, Defect, Issue, Requirement, Repository"
 )
+_AUTOTEST_LAYER_HELP = (
+    "Default autotest pyramid layer for all imported tests "
+    "(E2E, UI, API, Contract, Integration, Component, Unit, or any string)"
+)
+
+
+def _parse_autotest_layer(raw: typing.Optional[str]) -> typing.Optional[str]:
+    if raw is None or not str(raw).strip():
+        return None
+    return str(raw).strip()
 
 
 @results.command("upload")
@@ -88,7 +100,8 @@ _TESTRUN_LINKS_HELP = (
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
-def upload_results(url, token, configuration_id, testrun_id, testruntags, testrunlinks, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure):
+@click.option("-al", "--autotest-layer", type=str, envvar='TMS_AUTOTEST_LAYER', default=None, help=_AUTOTEST_LAYER_HELP)
+def upload_results(url, token, configuration_id, testrun_id, testruntags, testrunlinks, separator, namespace, classname, results, debug, attachments, disable_cert_validation, ignore_flaky_failure, autotest_layer):
     """Uploading results from different streams"""
     config = Config(
         url=url,
@@ -105,6 +118,7 @@ def upload_results(url, token, configuration_id, testrun_id, testruntags, testru
         paths_to_attachments=list(chain.from_iterable(attachments)),
         disable_cert_validation=disable_cert_validation,
         ignore_flaky_failure=ignore_flaky_failure,
+        autotest_layer=_parse_autotest_layer(autotest_layer),
     )
     service = ServiceFactory().get(config)
 
@@ -128,8 +142,9 @@ def upload_results(url, token, configuration_id, testrun_id, testruntags, testru
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
 @click.option("-iff", "--ignore-flaky-failure", is_flag=True, help="Ignore status flakyFailure in results")
+@click.option("-al", "--autotest-layer", type=str, envvar='TMS_AUTOTEST_LAYER', default=None, help=_AUTOTEST_LAYER_HELP)
 def import_results(url, token, project_id, configuration_id, testrun_id, testrun_name, testruntags, testrunlinks, separator, namespace, classname, results, debug,
-                   attachments, disable_cert_validation, ignore_flaky_failure):
+                   attachments, disable_cert_validation, ignore_flaky_failure, autotest_layer):
     """Uploading the first test results"""
     if testrun_id is not None and testrun_name is not None:
         click.echo("Illegal usage: `{}` are mutually exclusive arguments.".format(', '.join(["--testrun-id", "--testrun-name"])), err=True)
@@ -151,6 +166,7 @@ def import_results(url, token, project_id, configuration_id, testrun_id, testrun
         paths_to_attachments=list(chain.from_iterable(attachments)),
         disable_cert_validation=disable_cert_validation,
         ignore_flaky_failure=ignore_flaky_failure,
+        autotest_layer=_parse_autotest_layer(autotest_layer),
     )
     service = ServiceFactory().get(config)
 
@@ -163,19 +179,71 @@ def testrun():
     pass
 
 
-@testrun.command("create")
-@click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
-@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
-@click.option("-pi", "--project-id", type=str, envvar='TMS_PROJECT_ID', required=True, help="Set project id (5236eb3f-7c05-46f9-a609-dc0278896464)", callback=validate_uuid)
-@click.option("-tn", "--testrun-name", type=str, envvar='TMS_TEST_RUN_NAME', help="Set test run name (TestRun01)", default=None)
+def _require_create_options(**required_options):
+    """Validate empty-create required options when no subcommand is invoked."""
+    for flag, value in required_options.items():
+        if value is None or value == "":
+            raise click.UsageError(f"Missing option '{flag}'.")
+
+
+def _require_exactly_one_launch_source(
+    test_plan_id: typing.Optional[str],
+    launch_filter: typing.Optional[str],
+    autotest_external_ids_file: typing.Optional[str],
+) -> None:
+    sources = [
+        bool(test_plan_id),
+        bool(launch_filter),
+        bool(autotest_external_ids_file),
+    ]
+    if sum(sources) != 1:
+        raise click.UsageError(
+            "Provide exactly one of: --test-plan-id, --filter, or --autotest-external-ids-file"
+        )
+
+
+def _parse_launch_tags(launch_filter: typing.Optional[str]) -> typing.Optional[typing.List[str]]:
+    if not launch_filter:
+        return None
+    try:
+        return parse_launch_filter(launch_filter)
+    except LaunchFilterError as exc:
+        raise click.BadParameter(str(exc), param_hint="--filter") from exc
+
+
+def _load_autotest_external_ids(path: typing.Optional[str]) -> typing.Optional[typing.List[str]]:
+    if not path:
+        return None
+    autotest_external_ids = read_autotest_external_ids_file(path)
+    if not autotest_external_ids:
+        raise click.BadParameter(
+            "Autotest external ids file is empty (no external IDs)",
+            param_hint="--autotest-external-ids-file",
+        )
+    return autotest_external_ids
+
+
+@testrun.group("create", invoke_without_command=True)
+@click.pass_context
+@click.option("-u", "--url", type=str, envvar='TMS_URL', default=None, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url_optional)
+@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', default=None, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
+@click.option("-pi", "--project-id", type=str, envvar='TMS_PROJECT_ID', default=None, help="Set project id (5236eb3f-7c05-46f9-a609-dc0278896464)", callback=validate_uuid)
+@click.option("-tn", "--testrun-name", type=str, envvar='TMS_TEST_RUN_NAME', default=None, help="Set test run name (TestRun01)")
 @click.option("-trt", "--testruntags", type=str, envvar='TMS_TEST_RUN_TAGS', default=None, help=_TESTRUN_TAGS_HELP)
 @click.option("-trl", "--testrunlinks", type=str, envvar='TMS_TEST_RUN_LINKS', default=None, help=_TESTRUN_LINKS_HELP)
-@click.option("-o", "--output", type=str, required=True, help="Set file path for output (FILE)")
+@click.option("-o", "--output", type=str, default=None, help="Set file path for output (FILE)")
 @click.option("-a", "--attachments", multiple=True, type=list, help="Path to attachments for test run (multiple)", default=[], cls=ExtraArgsForOption)
 @click.option("-d", "--debug", is_flag=True, help="Set debug logs")
 @click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
-def create_test_run(url, token, project_id, testrun_name, testruntags, testrunlinks, output, debug, attachments, disable_cert_validation):
+def create_test_run(ctx, url, token, project_id, testrun_name, testruntags, testrunlinks, output, debug, attachments, disable_cert_validation):
     """Creating a new test run"""
+    if ctx.invoked_subcommand is not None:
+        return
+
+    _require_create_options(
+        **{"--url": url, "--token": token, "--project-id": project_id, "--output": output}
+    )
+
     config = Config(
         url=url,
         token=token,
@@ -191,6 +259,41 @@ def create_test_run(url, token, project_id, testrun_name, testruntags, testrunli
     service = ServiceFactory().get(config)
 
     service.create_test_run()
+
+
+@create_test_run.command("launch")
+@click.option("-u", "--url", type=str, envvar='TMS_URL', required=True, help="Set url address of the Test IT instance (https://demo.testit.software)", callback=validate_url)
+@click.option("-t", "--token", type=str, envvar='TMS_TOKEN', required=True, help="Set API token (T2lKd2pLZGI4WHRhaVZUejNl)")
+@click.option("-pi", "--project-id", type=str, envvar='TMS_PROJECT_ID', required=True, help="Set project id (5236eb3f-7c05-46f9-a609-dc0278896464)", callback=validate_uuid)
+@click.option("-ci", "--configuration-id", type=str, envvar='TMS_CONFIGURATION_ID', required=True, help="Set configuration id (15dbb164-c1aa-4cbf-830c-8c01ae14f4fb)", callback=validate_uuid)
+@click.option("-tpi", "--test-plan-id", type=str, envvar='TMS_TEST_PLAN_ID', default=None, help="Create run from test plan (UUID)", callback=validate_uuid)
+@click.option("-f", "--filter", "launch_filter", type=str, default=None, help="TMS filter, e.g. tags=smoke,nightly")
+@click.option("-af", "--autotest-external-ids-file", type=click.Path(exists=True, dir_okay=False, readable=True), default=None, help="File with autotest external IDs (one per line)")
+@click.option("-tn", "--testrun-name", type=str, envvar='TMS_TEST_RUN_NAME', help="Set test run name (TestRun01)", default=None)
+@click.option("-o", "--output", type=str, default=None, help="Optional file path to write test run id")
+@click.option("-d", "--debug", is_flag=True, help="Set debug logs")
+@click.option("-dcv", "--disable-cert-validation", is_flag=True, help="Disables certificate validation")
+def create_launch(url, token, project_id, configuration_id, test_plan_id, launch_filter, autotest_external_ids_file, testrun_name, output, debug, disable_cert_validation):
+    """Create and fill a test run (by plan, tags, or external IDs)"""
+    _require_exactly_one_launch_source(test_plan_id, launch_filter, autotest_external_ids_file)
+    launch_tags = _parse_launch_tags(launch_filter)
+    autotest_external_ids = _load_autotest_external_ids(autotest_external_ids_file)
+
+    config = Config(
+        url=url,
+        token=token,
+        project_id=project_id,
+        configuration_id=configuration_id,
+        test_plan_id=test_plan_id,
+        launch_tags=launch_tags,
+        autotest_external_ids=autotest_external_ids,
+        testrun_name=testrun_name,
+        is_debug=debug,
+        output=output or "",
+        disable_cert_validation=disable_cert_validation,
+    )
+    service = ServiceFactory().get(config)
+    service.launch_test_run()
 
 
 @testrun.command("complete")

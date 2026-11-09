@@ -27,3 +27,10 @@ def validate_url(ctx, param, value):
         return value[:-1]
 
     return value
+
+
+def validate_url_optional(ctx, param, value):
+    """Like validate_url, but allows missing value (optional group options)."""
+    if value is None:
+        return value
+    return validate_url(ctx, param, value)

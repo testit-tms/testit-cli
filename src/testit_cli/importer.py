@@ -1,10 +1,10 @@
 import hashlib
 import typing
 
-from testit_api_client.model.api_v2_auto_tests_search_post_request import ApiV2AutoTestsSearchPostRequest
-from testit_api_client.model.auto_test_api_result import AutoTestApiResult
 from tqdm import tqdm
 
+from adapters_api.model.adapters_auto_tests_search_post_request import AdaptersAutoTestsSearchPostRequest
+from adapters_api.model.auto_test_api_result import AutoTestApiResult
 from .apiclient import ApiClient
 from .converter import Converter
 from .models.config import Config
@@ -26,15 +26,15 @@ class Importer:
                 + result.get_name()
             )
 
-            request: ApiV2AutoTestsSearchPostRequest = (Converter
-                                                        .project_id_and_external_id_to_autotests_search_post_request
-                                                        (self.__config.project_id, external_id))
+            request: AdaptersAutoTestsSearchPostRequest = (
+                Converter.project_id_and_external_id_to_autotests_search_post_request(
+                    self.__config.project_id, external_id))
             autotests: list[AutoTestApiResult] = self.__api_client.get_autotests(request)
 
             if not autotests:
                 self.__api_client.create_autotest(
                     Converter.test_result_to_create_autotest_request(
-                        result, external_id, self.__config.project_id
+                        result, external_id, self.__config.project_id, self.__config.autotest_layer
                     )
                 )
             else:
@@ -42,7 +42,7 @@ class Importer:
 
                 self.__api_client.update_autotest(
                     Converter.test_result_to_update_autotest_request(
-                        result, external_id, self.__config.project_id
+                        result, external_id, self.__config.project_id, self.__config.autotest_layer
                     )
                 )
 

@@ -25,11 +25,74 @@ You can see more information in [official documentation](https://docs.testit.sof
 | 5.6     | 2.8.1.post560  |
 | 5.7     | 2.9.1.post570  |
 | 5.8     | 2.10.0.post580 |
+| 6.0     | 2.10.4.post600 |
 | Cloud   | 2.8.0 +        |
 
 1. For current versions, see the releases tab.
 2. Starting with 5.2, we have added a TMS postscript, which means that the utility is compatible with a specific enterprise version.
 3. If you are in doubt about which version to use, check with the support staff. support@yoonion.ru
+
+## Launch a filled test run (`testrun create launch`)
+
+Unlike `testrun create` (empty run), `testrun create launch` creates a **filled** test run.
+
+Provide **exactly one** source:
+
+| Source            | Flag                                   | Behaviour                                         |
+|-------------------|----------------------------------------|---------------------------------------------------|
+| Test plan         | `--test-plan-id` / `-tpi`              | Search automated test points in the TMS test plan |
+| Tags              | `--filter tags=smoke,nightly`          | Search autotests in TMS                           |
+| External IDs file | `--autotest-external-ids-file` / `-af` | One external ID per line in file                  |
+
+Required: `--url`, `--token`, `--project-id`, `--configuration-id`. Optional: `--testrun-name`, `--output` (also write ID to a file).
+
+The command prints `testRunId` to **stdout** (suitable for `export TMS_TEST_RUN_ID=$(...)`).
+
+```bash
+export TMS_TEST_RUN_ID=$(testit testrun create launch \
+  --url "$TMS_URL" \
+  --token "$TMS_TOKEN" \
+  --project-id "$TMS_PROJECT_ID" \
+  --configuration-id "$TMS_CONFIGURATION_ID" \
+  --filter tags=smoke \
+  --testrun-name "CI smoke")
+```
+
+From a test plan:
+
+```bash
+testit testrun create launch \
+  -u "$TMS_URL" -t "$TMS_TOKEN" \
+  -pi "$TMS_PROJECT_ID" -ci "$TMS_CONFIGURATION_ID" \
+  --test-plan-id "$TMS_TEST_PLAN_ID" \
+  -o ./testrun.id
+```
+
+### Autotest external IDs file
+
+`--autotest-external-ids-file` / `-af` expects a plain-text file of **autotest external IDs** (the same values as in TMS / `autoTestExternalIds`, not internal UUIDs or global IDs):
+
+- one external ID per line;
+- empty lines are ignored;
+- lines starting with `#` are comments;
+- duplicate IDs are ignored.
+
+Example `autotest-external-ids.txt`:
+
+```text
+# smoke suite
+login-test-ext-id
+checkout-test-ext-id
+
+payment-test-ext-id
+```
+
+```bash
+testit testrun create launch \
+  -u "$TMS_URL" -t "$TMS_TOKEN" \
+  -pi "$TMS_PROJECT_ID" -ci "$TMS_CONFIGURATION_ID" \
+  -af ./autotest-external-ids.txt
+```
 
 ## Test run tags and links
 
@@ -111,3 +174,31 @@ Notes:
 - Test run tags/links are independent from autotest/result tags and links.
 - On an existing run, new tags/links are **merged** (existing values are kept; duplicates by tag name / link URL are skipped).
 - Empty or omitted values mean “do not change tags/links”.
+
+## Autotest layer (test pyramid)
+
+When importing XML results, CLI can set the **autotest** pyramid layer for every upserted autotest (create/update).  
+This is a **run-level default** for file-based import; adapters still read layer from test code annotations.
+
+| Intent | CLI | Env |
+|--------|-----|-----|
+| Default autotest layer | `--autotest-layer` / `-al` | `TMS_AUTOTEST_LAYER` |
+
+Supported commands: `results import`, `results upload`.
+
+Recommended values: `E2E`, `UI`, `API`, `Contract`, `Integration`, `Component`, `Unit`. Any other non-empty string is accepted.
+
+```bash
+export TMS_AUTOTEST_LAYER=API
+testit results import \
+  --url "$TMS_URL" \
+  --token "$TMS_TOKEN" \
+  --project-id "$TMS_PROJECT_ID" \
+  --configuration-id "$TMS_CONFIGURATION_ID" \
+  --results ./results
+```
+
+Behaviour (aligned with adapters API):
+
+- Layer set → send `layer: { name, source: Run }` on create/update.
+- Layer not set → do not send `layer`; on update always send `resetLayer: false`.
