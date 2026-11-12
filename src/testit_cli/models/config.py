@@ -3,8 +3,6 @@ from dataclasses import dataclass, field
 
 from .testrun_link import TestRunLink
 
-from .testrun_link import TestRunLink
-
 
 @dataclass
 class Config:
