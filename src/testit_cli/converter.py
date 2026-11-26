@@ -50,8 +50,10 @@ class Converter:
 
     @staticmethod
     def external_ids_to_autotests_search_post_request(
-            external_ids: typing.List[str]) -> AdaptersAutoTestsSearchPostRequest:
+            external_ids: typing.List[str],
+            project_id: str) -> AdaptersAutoTestsSearchPostRequest:
         autotests_filter = AutoTestSearchApiModelFilter(
+            project_ids=[project_id],
             external_ids=external_ids,
             is_deleted=False)
         autotests_includes = AutoTestSearchApiModelIncludes(
@@ -83,13 +85,15 @@ class Converter:
     def autotest_models_to_external_keys(
             autotests: typing.List[AutoTestApiResult]) -> typing.List[str]:
         external_keys = []
+        seen = set()
 
         for autotest in autotests:
             external_key = autotest.external_key
 
-            if external_key is None:
+            if external_key is None or external_key in seen:
                 continue
 
+            seen.add(external_key)
             external_keys.append(external_key)
 
         return external_keys

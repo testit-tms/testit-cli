@@ -29,8 +29,17 @@ class AutotestsFilter:
             raise Exception(exception)
 
         external_ids: list[str] = Converter.test_result_short_models_to_autotest_external_ids(test_results)
+
+        test_run = self.__api_client.get_test_run(self.__config.testrun_id)
+        project_id = (test_run.project_id or "").strip()
+        if not project_id:
+            raise Exception(
+                f"Test run \"{self.__config.testrun_id}\" has empty projectId; "
+                "cannot build autotests_filter without project scope")
+        self.__config.project_id = project_id
+
         autotests_search_post_request: AdaptersAutoTestsSearchPostRequest = (
-            Converter.external_ids_to_autotests_search_post_request(external_ids))
+            Converter.external_ids_to_autotests_search_post_request(external_ids, project_id))
         autotests: list[AutoTestApiResult] = self.__api_client.get_autotests(autotests_search_post_request)
         external_keys: list[str] = Converter.autotest_models_to_external_keys(autotests)
 
